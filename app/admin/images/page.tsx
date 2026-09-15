@@ -17,7 +17,7 @@ const SECTIONS: SiteSection[] = [
   { key: "hero_3", label: "Hero Slide 3", description: "Main hero carousel image 3", currentSrc: "/images/IMG_8831.JPG" },
   { key: "discover_feature", label: "About Section", description: "Image in the Discover / About section", currentSrc: "/images/IMG_8829.JPG" },
   { key: "cta_bg", label: "Order CTA Background", description: "Background image for the Order Now section", currentSrc: "/images/IMG_8829.JPG" },
-  { key: "logo", label: "Restaurant Logo", description: "Logo used in navbar and footer", currentSrc: "/images/Umami - logo.png" },
+  { key: "logo", label: "Restaurant Logo", description: "Logo used in navbar and footer", currentSrc: "/images/umami-logo.png" },
 ];
 
 function UploadCard({ section }: { section: SiteSection }) {

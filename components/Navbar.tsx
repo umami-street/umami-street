@@ -33,7 +33,7 @@ export default function Navbar() {
         {/* Logo */}
         <Link href="#hero" className="flex items-center gap-3">
           <Image
-            src="/images/Umami - logo.png"
+            src="/images/umami-logo.png"
             alt="Umami Street Logo"
             width={48}
             height={48}

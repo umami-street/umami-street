@@ -10,7 +10,7 @@ export default function Footer() {
           <div className="md:col-span-2">
             <div className="flex items-center gap-3 mb-4">
               <Image
-                src="/images/Umami - logo.png"
+                src="/images/umami-logo.png"
                 alt="Umami Street"
                 width={44}
                 height={44}

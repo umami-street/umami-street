@@ -47,7 +47,7 @@ export default function AdminSidebar() {
       <div className="p-6 border-b border-stone/20">
         <div className="flex items-center gap-3">
           <Image
-            src="/images/Umami - logo.png"
+            src="/images/umami-logo.png"
             alt="Umami Street"
             width={40}
             height={40}
