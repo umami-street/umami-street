@@ -6,12 +6,14 @@ const BRANCHES = [
     address: "Molino, Naic, Cavite",
     hours: "12:00 PM – 12:00 AM",
     mapsUrl: "https://maps.app.goo.gl/umamistreet-molino",
+    comingSoon: false,
   },
   {
     name: "Umami Street – Sapa",
     address: "#116 Brgy. Sapa, Naic, Cavite",
-    hours: "12:00 PM – 12:00 AM",
-    mapsUrl: "https://maps.app.goo.gl/umamistreet-sapa",
+    hours: "",
+    mapsUrl: "",
+    comingSoon: true,
   },
 ];
 
@@ -46,36 +48,55 @@ export default function LocationSection() {
         {/* Two branches */}
         <div className="grid md:grid-cols-2 gap-8 mb-14">
           {BRANCHES.map((branch) => (
-            <div key={branch.name} className="bg-white border border-stone/20 p-8">
+            <div
+              key={branch.name}
+              className={`bg-white border p-8 ${branch.comingSoon ? "border-stone/20 opacity-80" : "border-stone/20"}`}
+            >
               <div className="flex items-start gap-4 mb-5">
-                <div className="w-10 h-10 bg-maroon flex items-center justify-center shrink-0 mt-0.5">
+                <div className={`w-10 h-10 flex items-center justify-center shrink-0 mt-0.5 ${branch.comingSoon ? "bg-stone/40" : "bg-maroon"}`}>
                   <MapPin size={18} className="text-cream" />
                 </div>
-                <div>
-                  <h3
-                    className="text-xl font-bold text-charcoal mb-1"
-                    style={{ fontFamily: "var(--font-playfair)" }}
-                  >
-                    {branch.name}
-                  </h3>
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <h3
+                      className="text-xl font-bold text-charcoal mb-1"
+                      style={{ fontFamily: "var(--font-playfair)" }}
+                    >
+                      {branch.name}
+                    </h3>
+                    {branch.comingSoon && (
+                      <span className="text-xs font-bold uppercase tracking-widest bg-tan/30 text-stone px-2 py-0.5 mb-1">
+                        Coming Soon
+                      </span>
+                    )}
+                  </div>
                   <p className="text-stone text-sm">{branch.address}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-3 mb-6 text-stone text-sm">
-                <Clock size={15} className="text-maroon shrink-0" />
-                <span>Open daily • {branch.hours}</span>
-              </div>
-              <p className="text-stone/60 text-xs mb-5">
-                Dine-in • Takeout • Advance Orders
-              </p>
-              <a
-                href={branch.mapsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-primary text-sm"
-              >
-                Get Directions
-              </a>
+
+              {branch.comingSoon ? (
+                <p className="text-stone/70 text-sm italic">
+                  This branch is opening soon. Stay tuned for updates on hours and directions.
+                </p>
+              ) : (
+                <>
+                  <div className="flex items-center gap-3 mb-6 text-stone text-sm">
+                    <Clock size={15} className="text-maroon shrink-0" />
+                    <span>Open daily • {branch.hours}</span>
+                  </div>
+                  <p className="text-stone/60 text-xs mb-5">
+                    Dine-in • Takeout • Advance Orders
+                  </p>
+                  <a
+                    href={branch.mapsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-primary text-sm"
+                  >
+                    Get Directions
+                  </a>
+                </>
+              )}
             </div>
           ))}
         </div>
