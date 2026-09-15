@@ -59,7 +59,7 @@ export default function DiscoverSection() {
         <div className="grid md:grid-cols-2 gap-6 items-center">
           <div className="relative h-80 md:h-[480px] overflow-hidden">
             <Image
-              src="/images/IMG_8829.JPG"
+              src="/images/img_8829.webp"
               alt="Umami Street food"
               fill
               className="object-cover hover:scale-105 transition-transform duration-700"

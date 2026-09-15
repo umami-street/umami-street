@@ -41,7 +41,7 @@ export default function LoginPage() {
         <div className="text-center mb-10">
           <div className="flex justify-center mb-4">
             <Image
-              src="/images/umami-logo.png"
+              src="/images/umami-logo.webp"
               alt="Umami Street"
               width={72}
               height={72}

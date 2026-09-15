@@ -11,7 +11,7 @@ export default function CTASection() {
       <section id="order" className="relative py-28 overflow-hidden bg-charcoal">
         <div className="absolute inset-0">
           <Image
-            src="/images/IMG_8829.JPG"
+            src="/images/img_8829.webp"
             alt="Order background"
             fill
             className="object-cover opacity-20"

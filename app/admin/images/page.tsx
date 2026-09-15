@@ -12,12 +12,12 @@ type SiteSection = {
 };
 
 const SECTIONS: SiteSection[] = [
-  { key: "hero_1", label: "Hero Slide 1", description: "Main hero carousel image 1", currentSrc: "/images/IMG_8414.JPG" },
-  { key: "hero_2", label: "Hero Slide 2", description: "Main hero carousel image 2", currentSrc: "/images/IMG_8524.JPG" },
-  { key: "hero_3", label: "Hero Slide 3", description: "Main hero carousel image 3", currentSrc: "/images/IMG_8831.JPG" },
-  { key: "discover_feature", label: "About Section", description: "Image in the Discover / About section", currentSrc: "/images/IMG_8829.JPG" },
-  { key: "cta_bg", label: "Order CTA Background", description: "Background image for the Order Now section", currentSrc: "/images/IMG_8829.JPG" },
-  { key: "logo", label: "Restaurant Logo", description: "Logo used in navbar and footer", currentSrc: "/images/umami-logo.png" },
+  { key: "hero_1", label: "Hero Slide 1", description: "Main hero carousel image 1", currentSrc: "/images/img_8414.webp" },
+  { key: "hero_2", label: "Hero Slide 2", description: "Main hero carousel image 2", currentSrc: "/images/img_8524.webp" },
+  { key: "hero_3", label: "Hero Slide 3", description: "Main hero carousel image 3", currentSrc: "/images/img_8831.webp" },
+  { key: "discover_feature", label: "About Section", description: "Image in the Discover / About section", currentSrc: "/images/img_8829.webp" },
+  { key: "cta_bg", label: "Order CTA Background", description: "Background image for the Order Now section", currentSrc: "/images/img_8829.webp" },
+  { key: "logo", label: "Restaurant Logo", description: "Logo used in navbar and footer", currentSrc: "/images/umami-logo.webp" },
 ];
 
 function UploadCard({ section }: { section: SiteSection }) {

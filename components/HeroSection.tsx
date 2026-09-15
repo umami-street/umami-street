@@ -4,17 +4,17 @@ import { useState, useEffect } from "react";
 
 const slides = [
   {
-    src: "/images/IMG_8414.JPG",
+    src: "/images/img_8414.webp",
     headline: "Where Flavors Meet",
     sub: "Bold Asian street food crafted with passion and served with heart.",
   },
   {
-    src: "/images/IMG_8524.JPG",
+    src: "/images/img_8524.webp",
     headline: "Taste the Street",
     sub: "From crispy grills to hearty rice meals — every bite tells a story.",
   },
   {
-    src: "/images/IMG_8831.JPG",
+    src: "/images/img_8831.webp",
     headline: "Fresh. Bold. Umami.",
     sub: "Discover our rotating menu of street-inspired creations.",
   },

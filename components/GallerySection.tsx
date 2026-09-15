@@ -4,18 +4,18 @@ import Image from "next/image";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 
 const GALLERY = [
-  "/images/IMG_8414.JPG",
-  "/images/IMG_8524.JPG",
-  "/images/IMG_8525.JPG",
-  "/images/IMG_8544.JPG",
-  "/images/IMG_8547.JPG",
-  "/images/IMG_8766.JPG",
-  "/images/IMG_8824.JPG",
-  "/images/IMG_8829.JPG",
-  "/images/IMG_8831.JPG",
-  "/images/IMG_8853.JPG",
-  "/images/IMG_8867.JPG",
-  "/images/IMG_8907.JPG",
+  "/images/img_8414.webp",
+  "/images/img_8524.webp",
+  "/images/img_8525.webp",
+  "/images/img_8544.webp",
+  "/images/img_8547.webp",
+  "/images/img_8766.webp",
+  "/images/img_8824.webp",
+  "/images/img_8829.webp",
+  "/images/img_8831.webp",
+  "/images/img_8853.webp",
+  "/images/img_8867.webp",
+  "/images/img_8907.webp",
 ];
 
 export default function GallerySection() {
