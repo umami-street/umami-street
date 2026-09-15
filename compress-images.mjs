@@ -20,7 +20,7 @@ for (const file of files) {
   const tmp = input + '.tmp';
 
   try {
-    const img = sharp(input).resize({ width: MAX_WIDTH, withoutEnlargement: true });
+    const img = sharp(input).rotate().resize({ width: MAX_WIDTH, withoutEnlargement: true });
 
     if (ext === '.png') {
       await img.png({ quality: 80, compressionLevel: 9 }).toFile(tmp);
