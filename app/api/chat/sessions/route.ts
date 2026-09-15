@@ -1,20 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
-import { readSessions, writeSessions, type ChatSession } from "../_utils";
+import { createClient } from "@/lib/supabase-server";
+
+export const runtime = "edge";
 
 export async function GET() {
-  const sessions = readSessions();
-  return NextResponse.json(
-    sessions.sort(
-      (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
-    )
-  );
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("chat_sessions")
+    .select("*")
+    .order("updated_at", { ascending: false });
+  return NextResponse.json(data ?? []);
 }
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
   const now = new Date().toISOString();
-  const session: ChatSession = {
-    id: crypto.randomUUID(),
+  const session = {
     visitor_name: body.visitor_name || "Visitor",
     visitor_email: body.visitor_email || "",
     visitor_contact: body.visitor_contact || "",
@@ -26,8 +27,14 @@ export async function POST(request: NextRequest) {
     created_at: now,
     updated_at: now,
   };
-  const sessions = readSessions();
-  sessions.unshift(session);
-  writeSessions(sessions);
-  return NextResponse.json({ sessionId: session.id });
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("chat_sessions")
+    .insert(session)
+    .select("id")
+    .single();
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  return NextResponse.json({ sessionId: data.id });
 }

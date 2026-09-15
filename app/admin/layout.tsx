@@ -1,5 +1,7 @@
 import AdminSidebar from "@/components/admin/AdminSidebar";
 
+export const runtime = "edge";
+
 export default function AdminLayout({
   children,
 }: {

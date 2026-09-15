@@ -207,3 +207,42 @@ CREATE POLICY "Public insert chat message" ON chat_messages FOR INSERT WITH CHEC
 CREATE POLICY "Public read chat messages" ON chat_messages FOR SELECT USING (true);
 CREATE POLICY "Admin all chat sessions" ON chat_sessions FOR ALL USING (auth.role() = 'authenticated');
 CREATE POLICY "Admin all chat messages" ON chat_messages FOR ALL USING (auth.role() = 'authenticated');
+
+-- ─────────────────────────────────────────────
+-- Chat Agent State (single-row heartbeat tracker)
+-- ─────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS chat_agent_state (
+  id INT PRIMARY KEY DEFAULT 1,
+  agent_name TEXT DEFAULT '',
+  last_heartbeat TIMESTAMPTZ
+);
+
+ALTER TABLE chat_agent_state ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public read agent state" ON chat_agent_state FOR SELECT USING (true);
+CREATE POLICY "Admin all agent state" ON chat_agent_state FOR ALL USING (auth.role() = 'authenticated');
+
+INSERT INTO chat_agent_state (id, agent_name, last_heartbeat)
+VALUES (1, '', null) ON CONFLICT DO NOTHING;
+
+-- ─────────────────────────────────────────────
+-- Trigger: update session summary on new message
+-- ─────────────────────────────────────────────
+CREATE OR REPLACE FUNCTION update_session_on_message()
+RETURNS TRIGGER AS $$
+BEGIN
+  UPDATE chat_sessions
+  SET
+    last_message = LEFT(NEW.message, 80),
+    updated_at   = NOW(),
+    unread_count = CASE
+      WHEN NEW.sender = 'visitor' THEN COALESCE(unread_count, 0) + 1
+      ELSE COALESCE(unread_count, 0)
+    END
+  WHERE id = NEW.session_id;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE TRIGGER on_chat_message_insert
+  AFTER INSERT ON chat_messages
+  FOR EACH ROW EXECUTE FUNCTION update_session_on_message();

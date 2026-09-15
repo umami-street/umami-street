@@ -2,6 +2,8 @@ import { createClient } from "@/lib/supabase-server";
 import { ShoppingBag, FileText, Camera, UtensilsCrossed } from "lucide-react";
 import Link from "next/link";
 
+export const runtime = "edge";
+
 async function getStats() {
   try {
     const supabase = await createClient();

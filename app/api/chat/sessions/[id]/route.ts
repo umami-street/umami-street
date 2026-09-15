@@ -1,23 +1,38 @@
 import { NextRequest, NextResponse } from "next/server";
-import { readSessions, writeSessions, readMessages } from "../../_utils";
+import { createClient } from "@/lib/supabase-server";
+
+export const runtime = "edge";
 
 export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const sessions = readSessions();
-  const session = sessions.find((s) => s.id === id);
-  if (!session) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  const supabase = await createClient();
 
-  const updated = sessions.map((s) =>
-    s.id === id ? { ...s, unread_count: 0 } : s
-  );
-  writeSessions(updated);
+  const { data: session, error } = await supabase
+    .from("chat_sessions")
+    .select("*")
+    .eq("id", id)
+    .single();
 
-  const allMessages = readMessages();
-  const messages = allMessages.filter((m) => m.session_id === id);
-  return NextResponse.json({ session: { ...session, unread_count: 0 }, messages });
+  if (error || !session) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
+  await supabase
+    .from("chat_sessions")
+    .update({ unread_count: 0 })
+    .eq("id", id);
+
+  const { data: messages } = await supabase
+    .from("chat_messages")
+    .select("*")
+    .eq("session_id", id)
+    .order("created_at", { ascending: true });
+
+  return NextResponse.json({
+    session: { ...session, unread_count: 0 },
+    messages: messages ?? [],
+  });
 }
 
 export async function PATCH(
@@ -26,10 +41,12 @@ export async function PATCH(
 ) {
   const { id } = await params;
   const body = await request.json();
-  const sessions = readSessions();
-  const updated = sessions.map((s) =>
-    s.id === id ? { ...s, ...body, updated_at: new Date().toISOString() } : s
-  );
-  writeSessions(updated);
+  const supabase = await createClient();
+
+  await supabase
+    .from("chat_sessions")
+    .update({ ...body, updated_at: new Date().toISOString() })
+    .eq("id", id);
+
   return NextResponse.json({ success: true });
 }

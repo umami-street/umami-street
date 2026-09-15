@@ -1,11 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import {
-  readSessions,
-  writeSessions,
-  readMessages,
-  writeMessages,
-  type ChatMessage,
-} from "../_utils";
+import { createClient } from "@/lib/supabase-server";
+
+export const runtime = "edge";
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
@@ -14,31 +10,21 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Missing fields" }, { status: 400 });
   }
 
-  const msg: ChatMessage = {
-    id: crypto.randomUUID(),
+  const msg = {
     session_id,
     sender: sender || "visitor",
-    agent_name: agent_name || undefined,
+    agent_name: agent_name || null,
     message,
     created_at: new Date().toISOString(),
   };
 
-  const messages = readMessages();
-  messages.push(msg);
-  writeMessages(messages);
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("chat_messages")
+    .insert(msg)
+    .select()
+    .single();
 
-  const sessions = readSessions();
-  const updated = sessions.map((s) => {
-    if (s.id !== session_id) return s;
-    return {
-      ...s,
-      last_message: message.slice(0, 80),
-      updated_at: new Date().toISOString(),
-      unread_count:
-        sender === "visitor" ? (s.unread_count || 0) + 1 : s.unread_count,
-    };
-  });
-  writeSessions(updated);
-
-  return NextResponse.json({ success: true, message: msg });
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  return NextResponse.json({ success: true, message: data });
 }
