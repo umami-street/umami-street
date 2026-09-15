@@ -1,0 +1,8 @@
+name = "umami-street"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = ".vercel/output/static"
+
+[vars]
+NEXT_PUBLIC_SUPABASE_URL = "https://urztyorxdnmhdzipvtkh.supabase.co"
+NEXT_PUBLIC_SUPABASE_ANON_KEY = "sb_publishable_J8Mg0gfO9MCqFTfOeD-Rag_u3g96I8R"
