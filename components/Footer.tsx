@@ -36,20 +36,20 @@ export default function Footer() {
             </p>
             <ul className="space-y-3">
               {[
-                ["Home", "#hero"],
-                ["About", "#about"],
-                ["Menu", "#menu"],
-                ["Gallery", "#gallery"],
-                ["Blog", "#blog"],
-                ["Contact", "#contact"],
-              ].map(([label, href]) => (
+                ["Home", "hero"],
+                ["About", "about"],
+                ["Menu", "menu"],
+                ["Gallery", "gallery"],
+                ["Blog", "blog"],
+                ["Contact", "contact"],
+              ].map(([label, section]) => (
                 <li key={label}>
-                  <a
-                    href={href}
+                  <button
+                    onClick={() => document.getElementById(section)?.scrollIntoView({ behavior: "smooth" })}
                     className="text-cream/50 hover:text-cream text-sm transition-colors"
                   >
                     {label}
-                  </a>
+                  </button>
                 </li>
               ))}
               <li>

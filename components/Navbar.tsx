@@ -5,13 +5,17 @@ import Link from "next/link";
 import { Menu, X } from "lucide-react";
 
 const navLinks = [
-  { label: "Home", href: "#hero" },
-  { label: "About", href: "#about" },
-  { label: "Menu", href: "#menu" },
-  { label: "Gallery", href: "#gallery" },
-  { label: "Blog", href: "#blog" },
-  { label: "Contact", href: "#contact" },
+  { label: "Home", section: "hero" },
+  { label: "About", section: "about" },
+  { label: "Menu", section: "menu" },
+  { label: "Gallery", section: "gallery" },
+  { label: "Blog", section: "blog" },
+  { label: "Contact", section: "contact" },
 ];
+
+function scrollTo(id: string) {
+  document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+}
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -31,7 +35,7 @@ export default function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-20">
         {/* Logo */}
-        <Link href="#hero" className="flex items-center gap-3">
+        <button onClick={() => scrollTo("hero")} className="flex items-center gap-3">
           <Image
             src="/images/umami-logo.webp"
             alt="Umami Street Logo"
@@ -45,25 +49,28 @@ export default function Navbar() {
           >
             Umami Street
           </span>
-        </Link>
+        </button>
 
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-8">
           {navLinks.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
+            <button
+              key={link.section}
+              onClick={() => scrollTo(link.section)}
               className="text-cream/80 hover:text-cream text-sm font-medium tracking-wide uppercase transition-colors"
             >
               {link.label}
-            </a>
+            </button>
           ))}
           <Link href="/track-order" className="text-cream/80 hover:text-cream text-sm font-medium tracking-wide uppercase transition-colors">
             Track Order
           </Link>
-          <a href="#order" className="btn-primary text-sm !py-2 !px-5">
+          <button
+            onClick={() => scrollTo("order")}
+            className="btn-primary text-sm !py-2 !px-5"
+          >
             Order Now
-          </a>
+          </button>
         </nav>
 
         {/* Mobile toggle */}
@@ -80,21 +87,23 @@ export default function Navbar() {
       {open && (
         <div className="md:hidden bg-charcoal border-t border-stone/20 px-6 py-4 flex flex-col gap-4">
           {navLinks.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              onClick={() => setOpen(false)}
-              className="text-cream/80 hover:text-cream text-sm font-medium tracking-wide uppercase transition-colors py-2"
+            <button
+              key={link.section}
+              onClick={() => { scrollTo(link.section); setOpen(false); }}
+              className="text-cream/80 hover:text-cream text-sm font-medium tracking-wide uppercase transition-colors py-2 text-left"
             >
               {link.label}
-            </a>
+            </button>
           ))}
           <Link href="/track-order" onClick={() => setOpen(false)} className="text-cream/80 hover:text-cream text-sm font-medium tracking-wide uppercase transition-colors py-2">
             Track Order
           </Link>
-          <a href="#order" onClick={() => setOpen(false)} className="btn-primary text-center text-sm">
+          <button
+            onClick={() => { scrollTo("order"); setOpen(false); }}
+            className="btn-primary text-center text-sm"
+          >
             Order Now
-          </a>
+          </button>
         </div>
       )}
     </header>
