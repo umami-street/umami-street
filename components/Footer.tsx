@@ -45,7 +45,10 @@ export default function Footer() {
               ].map(([label, section]) => (
                 <li key={label}>
                   <button
-                    onClick={() => document.getElementById(section)?.scrollIntoView({ behavior: "smooth" })}
+                    onClick={() => {
+                      document.getElementById(section)?.scrollIntoView({ behavior: "smooth" });
+                      window.history.pushState(null, "", `/${section}`);
+                    }}
                     className="text-cream/50 hover:text-cream text-sm transition-colors"
                   >
                     {label}

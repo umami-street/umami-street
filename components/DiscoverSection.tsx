@@ -85,7 +85,10 @@ export default function DiscoverSection() {
               every occasion.
             </p>
             <button
-              onClick={() => document.getElementById("menu")?.scrollIntoView({ behavior: "smooth" })}
+              onClick={() => {
+                document.getElementById("menu")?.scrollIntoView({ behavior: "smooth" });
+                window.history.pushState(null, "", "/menu");
+              }}
               className="btn-primary inline-block"
             >
               See Our Menu

@@ -15,6 +15,7 @@ const navLinks = [
 
 function scrollTo(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+  window.history.pushState(null, "", `/${id}`);
 }
 
 export default function Navbar() {
