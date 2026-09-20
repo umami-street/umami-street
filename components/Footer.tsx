@@ -52,6 +52,11 @@ export default function Footer() {
                   </a>
                 </li>
               ))}
+              <li>
+                <Link href="/track-order" className="text-cream/50 hover:text-cream text-sm transition-colors">
+                  Track Order
+                </Link>
+              </li>
             </ul>
           </div>
 

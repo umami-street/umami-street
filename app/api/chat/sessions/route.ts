@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase-server";
+import { sendEmail, chatAdminHtml } from "@/lib/email";
 
 export const runtime = "edge";
 
@@ -36,5 +37,18 @@ export async function POST(request: NextRequest) {
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  sendEmail(
+    "admin@umamistreet.ph",
+    `New Live Chat – ${session.visitor_name}`,
+    chatAdminHtml({
+      visitor_name: session.visitor_name,
+      visitor_email: session.visitor_email,
+      visitor_contact: session.visitor_contact,
+      concern_type: session.concern_type,
+      concern_background: session.concern_background,
+    })
+  );
+
   return NextResponse.json({ sessionId: data.id });
 }

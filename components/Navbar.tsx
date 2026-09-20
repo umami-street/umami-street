@@ -58,6 +58,9 @@ export default function Navbar() {
               {link.label}
             </a>
           ))}
+          <Link href="/track-order" className="text-cream/80 hover:text-cream text-sm font-medium tracking-wide uppercase transition-colors">
+            Track Order
+          </Link>
           <a href="#order" className="btn-primary text-sm !py-2 !px-5">
             Order Now
           </a>
@@ -86,6 +89,9 @@ export default function Navbar() {
               {link.label}
             </a>
           ))}
+          <Link href="/track-order" onClick={() => setOpen(false)} className="text-cream/80 hover:text-cream text-sm font-medium tracking-wide uppercase transition-colors py-2">
+            Track Order
+          </Link>
           <a href="#order" onClick={() => setOpen(false)} className="btn-primary text-center text-sm">
             Order Now
           </a>

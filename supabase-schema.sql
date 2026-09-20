@@ -77,14 +77,18 @@ CREATE TABLE IF NOT EXISTS blog_posts (
 -- ─────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS orders (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  order_number TEXT UNIQUE,
   customer_name TEXT NOT NULL,
   customer_email TEXT NOT NULL,
   customer_phone TEXT,
   items JSONB NOT NULL DEFAULT '[]',
   subtotal DECIMAL(10,2) DEFAULT 0,
   notes TEXT,
-  status TEXT DEFAULT 'new',
-  created_at TIMESTAMPTZ DEFAULT now()
+  payment_method TEXT DEFAULT '',
+  payment_reference TEXT DEFAULT '',
+  status TEXT DEFAULT 'pending_payment',
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
 );
 
 -- ─────────────────────────────────────────────
@@ -140,8 +144,9 @@ CREATE POLICY "Public read blogs" ON blog_posts FOR SELECT USING (is_published =
 CREATE POLICY "Public read partners" ON partners FOR SELECT USING (is_active = true);
 CREATE POLICY "Public read site_content" ON site_content FOR SELECT USING (true);
 
--- Public insert orders
+-- Public insert orders + public read for order tracking (filtered by order_number + email in app layer)
 CREATE POLICY "Public insert orders" ON orders FOR INSERT WITH CHECK (true);
+CREATE POLICY "Public read orders for tracking" ON orders FOR SELECT USING (true);
 
 -- Auth users (admin) can do everything
 CREATE POLICY "Admin all categories" ON menu_categories FOR ALL USING (auth.role() = 'authenticated');
@@ -246,3 +251,23 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 CREATE TRIGGER on_chat_message_insert
   AFTER INSERT ON chat_messages
   FOR EACH ROW EXECUTE FUNCTION update_session_on_message();
+
+-- ─────────────────────────────────────────────
+-- Migration: Orders table — new payment + tracking columns
+-- Run this if you already created the orders table without these columns
+-- ─────────────────────────────────────────────
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS order_number TEXT UNIQUE;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS payment_method TEXT DEFAULT '';
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS payment_reference TEXT DEFAULT '';
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT now();
+-- Update status default for new orders
+ALTER TABLE orders ALTER COLUMN status SET DEFAULT 'pending_payment';
+-- Add public read policy for order tracking (if not exists)
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies WHERE tablename='orders' AND policyname='Public read orders for tracking'
+  ) THEN
+    CREATE POLICY "Public read orders for tracking" ON orders FOR SELECT USING (true);
+  END IF;
+END $$;

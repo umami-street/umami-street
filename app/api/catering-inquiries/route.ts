@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase-server";
+import { sendEmail, cateringAdminHtml, cateringCustomerHtml } from "@/lib/email";
 
 export const runtime = "edge";
 
@@ -30,6 +31,10 @@ export async function POST(request: NextRequest) {
     const supabase = await createClient();
     const { error } = await supabase.from("catering_inquiries").insert(inquiry);
     if (error) throw error;
+
+    const data = { name, email, phone, event_type, event_date, location, guest_count, menu_notes, message };
+    sendEmail("admin@umamistreet.ph", `New Catering Inquiry – ${name}`, cateringAdminHtml(data));
+    sendEmail(email, "Your Catering Inquiry – Umami Street", cateringCustomerHtml(name, email));
 
     return NextResponse.json({ success: true });
   } catch (error) {
