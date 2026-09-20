@@ -273,27 +273,41 @@ export default function OrderModal({
               <div className="bg-stone/10 border border-stone/20 px-4 py-2 text-stone text-xs mb-5 leading-relaxed">
                 Delivery fee may apply depending on your location.
               </div>
-              <div className="space-y-3 mb-6">
-                {MENU_FOR_ORDER.map((item) => {
-                  const qty = getQty(item.name);
+              <div className="space-y-6 mb-6">
+                {dbCategories.map((cat) => {
+                  const catItems = dbMenuItems.filter((i) => i.category_id === cat.id);
+                  if (catItems.length === 0) return null;
                   return (
-                    <div key={item.name} className="flex items-center justify-between p-3 bg-white border border-stone/20">
-                      <div>
-                        <p className="font-semibold text-charcoal text-sm">{item.name}</p>
-                        <p className="text-maroon text-xs font-bold">₱{item.price}</p>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        {qty > 0 && (
-                          <>
-                            <button onClick={() => removeItem(item.name)} className="w-7 h-7 bg-stone/20 hover:bg-maroon hover:text-cream flex items-center justify-center transition-colors">
-                              <Minus size={14} />
-                            </button>
-                            <span className="font-bold text-charcoal w-4 text-center text-sm">{qty}</span>
-                          </>
-                        )}
-                        <button onClick={() => addItem(item)} className="w-7 h-7 bg-maroon text-cream hover:bg-tan flex items-center justify-center transition-colors">
-                          <Plus size={14} />
-                        </button>
+                    <div key={cat.id}>
+                      <p className="text-xs font-bold uppercase tracking-widest text-maroon mb-2 pb-1 border-b border-stone/20">
+                        {cat.name}
+                      </p>
+                      <div className="space-y-2">
+                        {catItems.map((item) => {
+                          const itemPrice = parseFloat(String(item.price));
+                          const qty = getQty(item.name);
+                          return (
+                            <div key={item.id} className="flex items-center justify-between p-3 bg-white border border-stone/20">
+                              <div>
+                                <p className="font-semibold text-charcoal text-sm">{item.name}</p>
+                                <p className="text-maroon text-xs font-bold">₱{itemPrice}</p>
+                              </div>
+                              <div className="flex items-center gap-3">
+                                {qty > 0 && (
+                                  <>
+                                    <button onClick={() => removeItem(item.name)} className="w-7 h-7 bg-stone/20 hover:bg-maroon hover:text-cream flex items-center justify-center transition-colors">
+                                      <Minus size={14} />
+                                    </button>
+                                    <span className="font-bold text-charcoal w-4 text-center text-sm">{qty}</span>
+                                  </>
+                                )}
+                                <button onClick={() => addItem({ name: item.name, price: itemPrice })} className="w-7 h-7 bg-maroon text-cream hover:bg-tan flex items-center justify-center transition-colors">
+                                  <Plus size={14} />
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
                   );
