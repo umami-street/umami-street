@@ -84,9 +84,12 @@ export default function DiscoverSection() {
               the whole crew, Umami Street has something for every craving and
               every occasion.
             </p>
-            <a href="#menu" className="btn-primary inline-block">
+            <button
+              onClick={() => document.getElementById("menu")?.scrollIntoView({ behavior: "smooth" })}
+              className="btn-primary inline-block"
+            >
               See Our Menu
-            </a>
+            </button>
           </div>
         </div>
       </div>

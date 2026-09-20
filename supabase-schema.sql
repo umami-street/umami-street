@@ -158,15 +158,88 @@ CREATE POLICY "Admin all partners" ON partners FOR ALL USING (auth.role() = 'aut
 CREATE POLICY "Admin all site_content" ON site_content FOR ALL USING (auth.role() = 'authenticated');
 
 -- ─────────────────────────────────────────────
--- Seed: Menu Categories
+-- Seed: Real Umami Street Menu
 -- ─────────────────────────────────────────────
-INSERT INTO menu_categories (name, description, display_order) VALUES
-  ('Best Sellers', 'Our most-loved dishes — the ones that keep our regulars coming back.', 0),
-  ('Grilled & Chicken', 'Slow-marinated and grilled to perfection — bold smoke, tender meat.', 1),
-  ('Rice Meals', 'Complete, satisfying plates that hit every flavor note.', 2),
-  ('Drinks', 'Refreshing beverages to pair with your meal — fresh and flavorful.', 3),
-  ('Specials', 'Chef''s rotating selection of seasonal and limited offerings.', 4)
-ON CONFLICT DO NOTHING;
+-- Run this block to seed the real menu (clears placeholder data first)
+DO $$
+DECLARE
+  cat_bestsellers UUID;
+  cat_wings       UUID;
+  cat_rice        UUID;
+  cat_takoyaki    UUID;
+  cat_drinks      UUID;
+  cat_sides       UUID;
+BEGIN
+  DELETE FROM menu_items;
+  DELETE FROM menu_categories;
+
+  INSERT INTO menu_categories (name, description, display_order) VALUES
+    ('Best Sellers', 'Our most-loved items — the ones that keep our regulars coming back.', 0)
+  RETURNING id INTO cat_bestsellers;
+
+  INSERT INTO menu_categories (name, description, display_order) VALUES
+    ('Chicken Wings', 'Choose from 6 amazing flavors: Honey Garlic, Buffalo, Yangnyeom, Garlic Parmesan, Snow Cheese, BBQ.', 1)
+  RETURNING id INTO cat_wings;
+
+  INSERT INTO menu_categories (name, description, display_order) VALUES
+    ('Rice Meals & Combos', 'Complete, satisfying plates with rice and your choice of protein.', 2)
+  RETURNING id INTO cat_rice;
+
+  INSERT INTO menu_categories (name, description, display_order) VALUES
+    ('Takoyaki', 'Japanese-style balls in 3 flavors. Available in 4, 8, or 12 pcs.', 3)
+  RETURNING id INTO cat_takoyaki;
+
+  INSERT INTO menu_categories (name, description, display_order) VALUES
+    ('Drinks', 'Signature milk teas, fruit teas, and classic drinks to complete your meal.', 4)
+  RETURNING id INTO cat_drinks;
+
+  INSERT INTO menu_categories (name, description, display_order) VALUES
+    ('Noodles, Fries & More', 'Sides and snacks to round out your order.', 5)
+  RETURNING id INTO cat_sides;
+
+  -- Best Sellers
+  INSERT INTO menu_items (category_id, name, description, price, is_featured, display_order) VALUES
+    (cat_bestsellers, '6 Pcs Wings', 'Choose up to 2 flavors: Honey Garlic, Buffalo, Yangnyeom, Garlic Parmesan, Snow Cheese, BBQ', 199.00, true, 0),
+    (cat_bestsellers, 'Beef Bulgogi + Rice', 'Marinated Korean-style beef bulgogi served with steamed rice', 149.00, true, 1),
+    (cat_bestsellers, 'Kyoto Matcha Milk Tea', '16oz ₱85 · 22oz ₱95', 85.00, true, 2);
+
+  -- Chicken Wings
+  INSERT INTO menu_items (category_id, name, description, price, is_featured, display_order) VALUES
+    (cat_wings, '6 Pcs Wings', 'Choose up to 2 flavors', 199.00, false, 0),
+    (cat_wings, '12 Pcs Wings', 'Choose up to 4 flavors', 379.00, false, 1),
+    (cat_wings, '24 Pcs Wings', 'All 6 flavors available', 749.00, false, 2);
+
+  -- Rice Meals & Combos
+  INSERT INTO menu_items (category_id, name, description, price, is_featured, display_order) VALUES
+    (cat_rice, '3 Wings + Rice', '3 pcs wings with your choice of flavor, served with steamed rice', 129.00, false, 0),
+    (cat_rice, 'Beef Bulgogi + Rice', 'Marinated Korean-style beef bulgogi served with steamed rice', 149.00, true, 1),
+    (cat_rice, '3 Wings + Rice + Drink', 'Combo: 3 wings, steamed rice, and Coke or water', 149.00, false, 2),
+    (cat_rice, '3 Wings + Rice + Fries + Drink', 'Full combo: 3 wings, rice, fries, and Coke or water', 199.00, false, 3);
+
+  -- Takoyaki
+  INSERT INTO menu_items (category_id, name, description, price, is_featured, display_order) VALUES
+    (cat_takoyaki, 'Veggie Takoyaki', '4 pcs ₱79 · 8 pcs ₱129 · 12 pcs ₱179', 79.00, false, 0),
+    (cat_takoyaki, 'Cheese Bomb Takoyaki', '4 pcs ₱89 · 8 pcs ₱149 · 12 pcs ₱199', 89.00, false, 1),
+    (cat_takoyaki, 'Octobits Takoyaki', '4 pcs ₱89 · 8 pcs ₱149 · 12 pcs ₱199', 89.00, true, 2);
+
+  -- Drinks
+  INSERT INTO menu_items (category_id, name, description, price, is_featured, display_order) VALUES
+    (cat_drinks, 'Osaka Melon Cloud', 'Signature milk tea · 16oz ₱75 · 22oz ₱85', 75.00, false, 0),
+    (cat_drinks, 'Kyoto Matcha', 'Signature milk tea · 16oz ₱85 · 22oz ₱95', 85.00, true, 1),
+    (cat_drinks, 'Tokyo Sunset', 'Signature milk tea · 16oz ₱75 · 22oz ₱85', 75.00, false, 2),
+    (cat_drinks, 'Nara Green Glow', 'Signature milk tea · 16oz ₱75 · 22oz ₱85', 75.00, false, 3),
+    (cat_drinks, 'Fruit Tea', 'Lychee, Honey Peach, Strawberry, Green Apple, Mango, Passion Fruit, Blueberry · 16oz ₱55 · 22oz ₱65', 55.00, false, 4),
+    (cat_drinks, 'Coke', '330ml can', 30.00, false, 5),
+    (cat_drinks, 'Bottled Water', '500ml', 25.00, false, 6);
+
+  -- Noodles, Fries & More
+  INSERT INTO menu_items (category_id, name, description, price, is_featured, display_order) VALUES
+    (cat_sides, 'HK Fried Noodles', 'Plain ₱55 · +Chicken Siomai +₱15/pc · +Beef Siomai +₱18/pc', 55.00, false, 0),
+    (cat_sides, 'Regular Fries', 'Crispy golden fries', 59.00, false, 1),
+    (cat_sides, 'Flavored Fries', 'Cheese, BBQ, Sour Cream, or Chili BBQ', 79.00, false, 2),
+    (cat_sides, 'Extra Rice', 'Add steamed rice to any order', 25.00, false, 3),
+    (cat_sides, 'Extra Pearl / Jelly', 'Add-on for milk tea orders · Pearl ₱15 · Jelly ₱15', 15.00, false, 4);
+END $$;
 
 -- ─────────────────────────────────────────────
 -- Storage Buckets (run separately if needed)

@@ -1,89 +1,115 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
+import { createClient } from "@/lib/supabase";
 
+type Category = { id: string; name: string; description: string | null };
 type MenuItem = {
-  name: string;
-  desc: string;
-  price: string;
-  image: string;
-  featured?: boolean;
-};
-
-type Category = {
   id: string;
-  label: string;
-  description: string;
-  cover: string;
-  items: MenuItem[];
+  category_id: string;
+  name: string;
+  description: string | null;
+  price: number | string;
+  image_url: string | null;
+  is_featured: boolean;
+  is_available: boolean;
 };
 
-const MENU: Category[] = [
-  {
-    id: "bestsellers",
-    label: "Best Sellers",
-    description: "Our most-loved dishes — the ones that keep our regulars coming back.",
-    cover: "/images/best-seller.webp",
-    items: [
-      { name: "Umami Signature Bowl", desc: "Rice, grilled chicken, egg, pickled veggies & house umami sauce", price: "₱159", image: "/images/img_8853.webp", featured: true },
-      { name: "Street Grilled Liempo", desc: "Marinated pork belly grilled over charcoal, served with garlic rice", price: "₱179", image: "/images/img_8867.webp", featured: true },
-      { name: "Crispy Chicken Cutlet", desc: "Breaded chicken thigh fillet, Japanese-style with katsu sauce", price: "₱149", image: "/images/img_8907.webp" },
-      { name: "Gawa-Gawa Sisig", desc: "Sizzling chopped pork sisig with egg and calamansi", price: "₱155", image: "/images/img_8544.webp" },
-    ],
-  },
-  {
-    id: "grilled",
-    label: "Grilled & Chicken",
-    description: "Slow-marinated and grilled to perfection — bold smoke, tender meat.",
-    cover: "/images/chick2-umas.webp",
-    items: [
-      { name: "Charcoal Grilled Chicken", desc: "Half chicken marinated in our signature blend, grilled low & slow", price: "₱189", image: "/images/img_8524.webp", featured: true },
-      { name: "BBQ Pork Skewers (5 pcs)", desc: "Sweet and savory pork on bamboo sticks, street-style", price: "₱135", image: "/images/img_8525.webp" },
-      { name: "Chicken Inasal", desc: "Visayan-style grilled chicken basted with annatto and lemongrass", price: "₱169", image: "/images/img_8766.webp" },
-      { name: "Grilled Liempo Solo", desc: "Pork belly slab grilled with garlic & soy marinade", price: "₱145", image: "/images/img_8824.webp" },
-    ],
-  },
-  {
-    id: "rice-meals",
-    label: "Rice Meals",
-    description: "Complete, satisfying plates that hit every flavor note.",
-    cover: "/images/rice-meal-ums.webp",
-    items: [
-      { name: "Garlic Fried Rice Combo", desc: "Garlic sinangag with your choice of ulam and fried egg", price: "₱129", image: "/images/img_8547.webp", featured: true },
-      { name: "Adobo Rice Bowl", desc: "Classic chicken adobo on steamed rice with pickled cucumber", price: "₱139", image: "/images/img_8414.webp" },
-      { name: "Sinigang na Hipon Set", desc: "Shrimp sinigang with vegetables, served with steamed rice", price: "₱185", image: "/images/img_8829.webp" },
-      { name: "Kare-Kare Bowl", desc: "Oxtail kare-kare with bagoong, served with garlic rice", price: "₱199", image: "/images/img_8831.webp" },
-    ],
-  },
-  {
-    id: "drinks",
-    label: "Drinks",
-    description: "Refreshing beverages to pair with your meal — fresh and flavorful.",
-    cover: "/images/drinks-oms.webp",
-    items: [
-      { name: "Calamansi Soda", desc: "Fresh calamansi juice topped with sparkling water and mint", price: "₱69", image: "/images/cw1.webp", featured: true },
-      { name: "Mango Shake", desc: "Blended fresh Philippine mango, creamy and chilled", price: "₱79", image: "/images/cw1.webp" },
-      { name: "Iced Salted Caramel Latte", desc: "Cold brewed coffee with house salted caramel syrup and oat milk", price: "₱89", image: "/images/cw1.webp" },
-      { name: "Pandan Lemonade", desc: "House-made pandan syrup with fresh lemon and sparkling water", price: "₱75", image: "/images/cw1.webp" },
-    ],
-  },
-  {
-    id: "specials",
-    label: "Specials",
-    description: "Chef's rotating selection of seasonal and limited offerings.",
-    cover: "/images/taks-oms.webp",
-    items: [
-      { name: "Umami Street Tacos (3 pcs)", desc: "Soft corn tortilla with braised beef, pickled onions, and salsa verde", price: "₱169", image: "/images/img_8853.webp", featured: true },
-      { name: "Crispy Tokwa't Baboy", desc: "Fried tofu and pork ears in vinegar-soy dressing with chili", price: "₱125", image: "/images/img_8867.webp" },
-      { name: "Kinilaw na Isda", desc: "Fresh fish cured in calamansi, coconut milk, ginger and chilies", price: "₱145", image: "/images/img_8907.webp" },
-      { name: "Loaded Fries", desc: "Crispy fries topped with cheese sauce, bacon bits, and spring onions", price: "₱115", image: "/images/img_8544.webp" },
-    ],
-  },
-];
+// Real Umami Street menu — shown while DB loads and as fallback
+const FALLBACK: { categories: Category[]; items: MenuItem[] } = {
+  categories: [
+    { id: "bestsellers", name: "Best Sellers", description: "Our most-loved items — the ones that keep our regulars coming back." },
+    { id: "wings", name: "Chicken Wings", description: "Choose from 6 amazing flavors: Honey Garlic, Buffalo, Yangnyeom, Garlic Parmesan, Snow Cheese, BBQ." },
+    { id: "rice-meals", name: "Rice Meals & Combos", description: "Complete, satisfying plates with rice and your choice of protein." },
+    { id: "takoyaki", name: "Takoyaki", description: "Japanese-style balls in 3 flavors. Available in 4, 8, or 12 pcs." },
+    { id: "drinks", name: "Drinks", description: "Signature milk teas, fruit teas, and classic drinks to complete your meal." },
+    { id: "sides", name: "Noodles, Fries & More", description: "Sides and snacks to round out your order." },
+  ],
+  items: [
+    // Best Sellers
+    { id: "bs1", category_id: "bestsellers", name: "6 Pcs Wings", description: "Choose up to 2 flavors: Honey Garlic, Buffalo, Yangnyeom, Garlic Parmesan, Snow Cheese, BBQ", price: 199, image_url: null, is_featured: true, is_available: true },
+    { id: "bs2", category_id: "bestsellers", name: "Beef Bulgogi + Rice", description: "Marinated Korean-style beef bulgogi served with steamed rice", price: 149, image_url: null, is_featured: true, is_available: true },
+    { id: "bs3", category_id: "bestsellers", name: "Kyoto Matcha Milk Tea", description: "16oz ₱85 · 22oz ₱95", price: 85, image_url: null, is_featured: true, is_available: true },
+    // Chicken Wings
+    { id: "w1", category_id: "wings", name: "6 Pcs Wings", description: "Choose up to 2 flavors", price: 199, image_url: null, is_featured: false, is_available: true },
+    { id: "w2", category_id: "wings", name: "12 Pcs Wings", description: "Choose up to 4 flavors", price: 379, image_url: null, is_featured: false, is_available: true },
+    { id: "w3", category_id: "wings", name: "24 Pcs Wings", description: "All 6 flavors available", price: 749, image_url: null, is_featured: false, is_available: true },
+    // Rice Meals & Combos
+    { id: "rm1", category_id: "rice-meals", name: "3 Wings + Rice", description: "3 pcs wings with your choice of flavor, served with steamed rice", price: 129, image_url: null, is_featured: false, is_available: true },
+    { id: "rm2", category_id: "rice-meals", name: "Beef Bulgogi + Rice", description: "Marinated Korean-style beef bulgogi served with steamed rice", price: 149, image_url: null, is_featured: true, is_available: true },
+    { id: "rm3", category_id: "rice-meals", name: "3 Wings + Rice + Drink", description: "Combo: 3 wings, steamed rice, and Coke or water", price: 149, image_url: null, is_featured: false, is_available: true },
+    { id: "rm4", category_id: "rice-meals", name: "3 Wings + Rice + Fries + Drink", description: "Full combo: 3 wings, rice, fries, and Coke or water", price: 199, image_url: null, is_featured: false, is_available: true },
+    // Takoyaki
+    { id: "t1", category_id: "takoyaki", name: "Veggie Takoyaki", description: "4 pcs ₱79 · 8 pcs ₱129 · 12 pcs ₱179", price: 79, image_url: null, is_featured: false, is_available: true },
+    { id: "t2", category_id: "takoyaki", name: "Cheese Bomb Takoyaki", description: "4 pcs ₱89 · 8 pcs ₱149 · 12 pcs ₱199", price: 89, image_url: null, is_featured: false, is_available: true },
+    { id: "t3", category_id: "takoyaki", name: "Octobits Takoyaki", description: "4 pcs ₱89 · 8 pcs ₱149 · 12 pcs ₱199", price: 89, image_url: null, is_featured: true, is_available: true },
+    // Drinks
+    { id: "d1", category_id: "drinks", name: "Osaka Melon Cloud", description: "Signature milk tea · 16oz ₱75 · 22oz ₱85", price: 75, image_url: null, is_featured: false, is_available: true },
+    { id: "d2", category_id: "drinks", name: "Kyoto Matcha", description: "Signature milk tea · 16oz ₱85 · 22oz ₱95", price: 85, image_url: null, is_featured: true, is_available: true },
+    { id: "d3", category_id: "drinks", name: "Tokyo Sunset", description: "Signature milk tea · 16oz ₱75 · 22oz ₱85", price: 75, image_url: null, is_featured: false, is_available: true },
+    { id: "d4", category_id: "drinks", name: "Nara Green Glow", description: "Signature milk tea · 16oz ₱75 · 22oz ₱85", price: 75, image_url: null, is_featured: false, is_available: true },
+    { id: "d5", category_id: "drinks", name: "Fruit Tea", description: "Lychee, Honey Peach, Strawberry, Green Apple, Mango, Passion Fruit, Blueberry · 16oz ₱55 · 22oz ₱65", price: 55, image_url: null, is_featured: false, is_available: true },
+    { id: "d6", category_id: "drinks", name: "Coke", description: "330ml can", price: 30, image_url: null, is_featured: false, is_available: true },
+    { id: "d7", category_id: "drinks", name: "Bottled Water", description: "500ml", price: 25, image_url: null, is_featured: false, is_available: true },
+    // Noodles, Fries & More
+    { id: "s1", category_id: "sides", name: "HK Fried Noodles", description: "Plain ₱55 · +Chicken Siomai +₱15/pc · +Beef Siomai +₱18/pc", price: 55, image_url: null, is_featured: false, is_available: true },
+    { id: "s2", category_id: "sides", name: "Regular Fries", description: "Crispy golden fries", price: 59, image_url: null, is_featured: false, is_available: true },
+    { id: "s3", category_id: "sides", name: "Flavored Fries", description: "Cheese, BBQ, Sour Cream, or Chili BBQ", price: 79, image_url: null, is_featured: false, is_available: true },
+    { id: "s4", category_id: "sides", name: "Extra Rice", description: "Add steamed rice to any order", price: 25, image_url: null, is_featured: false, is_available: true },
+    { id: "s5", category_id: "sides", name: "Extra Pearl / Jelly", description: "Add-on for milk tea orders · Pearl ₱15 · Jelly ₱15", price: 15, image_url: null, is_featured: false, is_available: true },
+  ],
+};
+
+function fmtPrice(price: number | string): string {
+  const n = typeof price === "string" ? parseFloat(price) : price;
+  return `₱${Number.isInteger(n) ? n : n.toFixed(2)}`;
+}
+
+function MenuPlaceholder({ name }: { name: string }) {
+  return (
+    <div className="w-full h-full bg-gradient-to-br from-maroon/20 to-charcoal/60 flex items-center justify-center">
+      <span
+        className="text-6xl font-black text-cream/10 select-none"
+        style={{ fontFamily: "var(--font-playfair)" }}
+      >
+        {name.charAt(0)}
+      </span>
+    </div>
+  );
+}
 
 export default function MenuSection() {
-  const [active, setActive] = useState("bestsellers");
-  const category = MENU.find((c) => c.id === active)!;
+  const [categories, setCategories] = useState<Category[]>(FALLBACK.categories);
+  const [items, setItems] = useState<MenuItem[]>(FALLBACK.items);
+  const [active, setActive] = useState(FALLBACK.categories[0].id);
+
+  useEffect(() => {
+    const supabase = createClient();
+    (async () => {
+      const [{ data: cats }, { data: menuItems }] = await Promise.all([
+        supabase
+          .from("menu_categories")
+          .select("id,name,description")
+          .eq("is_active", true)
+          .order("display_order"),
+        supabase
+          .from("menu_items")
+          .select("id,category_id,name,description,price,image_url,is_featured,is_available")
+          .eq("is_available", true)
+          .order("display_order"),
+      ]);
+      if (cats && cats.length > 0) {
+        setCategories(cats);
+        setActive(cats[0].id);
+      }
+      if (menuItems && menuItems.length > 0) {
+        setItems(menuItems);
+      }
+    })();
+  }, []);
+
+  const category = categories.find((c) => c.id === active) ?? categories[0];
+  const visibleItems = items.filter((i) => i.category_id === active);
 
   return (
     <section id="menu" className="py-24 bg-cream">
@@ -93,14 +119,14 @@ export default function MenuSection() {
           <p className="label-tag mb-3">Our Menu</p>
           <h2 className="section-heading text-charcoal mb-4">What&apos;s on the Menu?</h2>
           <p className="section-subheading text-stone mx-auto text-center">
-            From grilled street favorites to hearty rice meals and refreshing
-            drinks — there&apos;s something for every craving at Umami Street.
+            From crispy wings and rice meals to takoyaki, signature drinks, and more —
+            there&apos;s something for every craving at Umami Street.
           </p>
         </div>
 
         {/* Category Tabs */}
         <div className="flex flex-wrap justify-center gap-2 mb-12">
-          {MENU.map((cat) => (
+          {categories.map((cat) => (
             <button
               key={cat.id}
               onClick={() => setActive(cat.id)}
@@ -110,31 +136,37 @@ export default function MenuSection() {
                   : "border-stone/40 text-stone hover:border-maroon hover:text-maroon"
               }`}
             >
-              {cat.label}
+              {cat.name}
             </button>
           ))}
         </div>
 
         {/* Category Description */}
-        <div className="text-center mb-10">
-          <p className="text-stone italic">{category.description}</p>
-        </div>
+        {category?.description && (
+          <div className="text-center mb-10">
+            <p className="text-stone italic">{category.description}</p>
+          </div>
+        )}
 
         {/* Items Grid */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {category.items.map((item) => (
+          {visibleItems.map((item) => (
             <div
-              key={item.name}
+              key={item.id}
               className="bg-white group overflow-hidden shadow-sm hover:shadow-md transition-shadow"
             >
-              <div className="relative h-52 overflow-hidden">
-                <Image
-                  src={item.image}
-                  alt={item.name}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                {item.featured && (
+              <div className="relative h-52 overflow-hidden bg-charcoal/10">
+                {item.image_url ? (
+                  <Image
+                    src={item.image_url}
+                    alt={item.name}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                ) : (
+                  <MenuPlaceholder name={item.name} />
+                )}
+                {item.is_featured && (
                   <span className="absolute top-3 left-3 bg-maroon text-cream text-xs font-bold px-2 py-1 uppercase tracking-wide">
                     Bestseller
                   </span>
@@ -149,19 +181,24 @@ export default function MenuSection() {
                     {item.name}
                   </h4>
                   <span className="text-maroon font-bold text-sm shrink-0">
-                    {item.price}
+                    {fmtPrice(item.price)}
                   </span>
                 </div>
-                <p className="text-stone text-xs leading-relaxed">{item.desc}</p>
+                {item.description && (
+                  <p className="text-stone text-xs leading-relaxed">{item.description}</p>
+                )}
               </div>
             </div>
           ))}
         </div>
 
         <div className="text-center mt-12">
-          <a href="#order" className="btn-primary">
+          <button
+            onClick={() => document.getElementById("order")?.scrollIntoView({ behavior: "smooth" })}
+            className="btn-primary"
+          >
             Order Now
-          </a>
+          </button>
         </div>
       </div>
     </section>
