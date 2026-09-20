@@ -14,13 +14,14 @@ import { notFound } from "next/navigation";
 
 const VALID_SECTIONS = ["hero", "about", "menu", "gallery", "blog", "contact", "order"];
 
-export default function SectionPage({ params }: { params: { section: string } }) {
-  if (!VALID_SECTIONS.includes(params.section)) notFound();
+export default async function SectionPage({ params }: { params: Promise<{ section: string }> }) {
+  const { section } = await params;
+  if (!VALID_SECTIONS.includes(section)) notFound();
 
   return (
     <>
       <Navbar />
-      <ScrollOnLoad section={params.section} />
+      <ScrollOnLoad section={section} />
       <main>
         <HeroSection />
         <DiscoverSection />
