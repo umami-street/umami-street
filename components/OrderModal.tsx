@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { X, Plus, Minus, ShoppingBag, User, Building2, ArrowLeft, Smartphone, Landmark } from "lucide-react";
+import { createClient } from "@/lib/supabase";
 
 // ── Update these with your actual payment details ──────────────────────────
 const GCASH_NUMBER = "0991 007 9097";
@@ -12,28 +13,46 @@ const BANK_ACCOUNT_NAME = "Umami Street";  // ← change to registered account n
 
 type Step = "type" | "select" | "details" | "payment" | "done" | "catering" | "catering-done";
 
-type OrderItem = {
-  name: string;
-  price: number;
-  qty: number;
-};
+type OrderItem = { name: string; price: number; qty: number };
+type DBCategory = { id: string; name: string; display_order: number };
+type DBMenuItem = { id: string; category_id: string; name: string; price: number | string; is_available: boolean; display_order: number };
 
-const MENU_FOR_ORDER = [
-  { name: "Umami Signature Bowl", price: 159 },
-  { name: "Street Grilled Liempo", price: 179 },
-  { name: "Crispy Chicken Cutlet", price: 149 },
-  { name: "Gawa-Gawa Sisig", price: 155 },
-  { name: "Charcoal Grilled Chicken", price: 189 },
-  { name: "BBQ Pork Skewers (5 pcs)", price: 135 },
-  { name: "Chicken Inasal", price: 169 },
-  { name: "Garlic Fried Rice Combo", price: 129 },
-  { name: "Adobo Rice Bowl", price: 139 },
-  { name: "Sinigang na Hipon Set", price: 185 },
-  { name: "Calamansi Soda", price: 69 },
-  { name: "Mango Shake", price: 79 },
-  { name: "Umami Street Tacos (3 pcs)", price: 169 },
-  { name: "Crispy Tokwa't Baboy", price: 125 },
-  { name: "Loaded Fries", price: 115 },
+// Real menu fallback — mirrors MenuSection FALLBACK
+const FALLBACK_CATEGORIES: DBCategory[] = [
+  { id: "bestsellers", name: "Best Sellers", display_order: 0 },
+  { id: "wings", name: "Chicken Wings", display_order: 1 },
+  { id: "rice-meals", name: "Rice Meals & Combos", display_order: 2 },
+  { id: "takoyaki", name: "Takoyaki", display_order: 3 },
+  { id: "drinks", name: "Drinks", display_order: 4 },
+  { id: "sides", name: "Noodles, Fries & More", display_order: 5 },
+];
+
+const FALLBACK_ITEMS: DBMenuItem[] = [
+  { id: "bs1", category_id: "bestsellers", name: "6 Pcs Wings", price: 199, is_available: true, display_order: 0 },
+  { id: "bs2", category_id: "bestsellers", name: "Beef Bulgogi + Rice", price: 149, is_available: true, display_order: 1 },
+  { id: "bs3", category_id: "bestsellers", name: "Kyoto Matcha Milk Tea", price: 85, is_available: true, display_order: 2 },
+  { id: "w1", category_id: "wings", name: "6 Pcs Wings", price: 199, is_available: true, display_order: 0 },
+  { id: "w2", category_id: "wings", name: "12 Pcs Wings", price: 379, is_available: true, display_order: 1 },
+  { id: "w3", category_id: "wings", name: "24 Pcs Wings", price: 749, is_available: true, display_order: 2 },
+  { id: "rm1", category_id: "rice-meals", name: "3 Wings + Rice", price: 129, is_available: true, display_order: 0 },
+  { id: "rm2", category_id: "rice-meals", name: "Beef Bulgogi + Rice", price: 149, is_available: true, display_order: 1 },
+  { id: "rm3", category_id: "rice-meals", name: "3 Wings + Rice + Drink", price: 149, is_available: true, display_order: 2 },
+  { id: "rm4", category_id: "rice-meals", name: "3 Wings + Rice + Fries + Drink", price: 199, is_available: true, display_order: 3 },
+  { id: "t1", category_id: "takoyaki", name: "Veggie Takoyaki", price: 79, is_available: true, display_order: 0 },
+  { id: "t2", category_id: "takoyaki", name: "Cheese Bomb Takoyaki", price: 89, is_available: true, display_order: 1 },
+  { id: "t3", category_id: "takoyaki", name: "Octobits Takoyaki", price: 89, is_available: true, display_order: 2 },
+  { id: "d1", category_id: "drinks", name: "Osaka Melon Cloud", price: 75, is_available: true, display_order: 0 },
+  { id: "d2", category_id: "drinks", name: "Kyoto Matcha", price: 85, is_available: true, display_order: 1 },
+  { id: "d3", category_id: "drinks", name: "Tokyo Sunset", price: 75, is_available: true, display_order: 2 },
+  { id: "d4", category_id: "drinks", name: "Nara Green Glow", price: 75, is_available: true, display_order: 3 },
+  { id: "d5", category_id: "drinks", name: "Fruit Tea", price: 55, is_available: true, display_order: 4 },
+  { id: "d6", category_id: "drinks", name: "Coke", price: 30, is_available: true, display_order: 5 },
+  { id: "d7", category_id: "drinks", name: "Bottled Water", price: 25, is_available: true, display_order: 6 },
+  { id: "s1", category_id: "sides", name: "HK Fried Noodles", price: 55, is_available: true, display_order: 0 },
+  { id: "s2", category_id: "sides", name: "Regular Fries", price: 59, is_available: true, display_order: 1 },
+  { id: "s3", category_id: "sides", name: "Flavored Fries", price: 79, is_available: true, display_order: 2 },
+  { id: "s4", category_id: "sides", name: "Extra Rice", price: 25, is_available: true, display_order: 3 },
+  { id: "s5", category_id: "sides", name: "Extra Pearl / Jelly", price: 15, is_available: true, display_order: 4 },
 ];
 
 export default function OrderModal({
@@ -54,6 +73,8 @@ export default function OrderModal({
   const [orderNumber, setOrderNumber] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [dbCategories, setDbCategories] = useState<DBCategory[]>(FALLBACK_CATEGORIES);
+  const [dbMenuItems, setDbMenuItems] = useState<DBMenuItem[]>(FALLBACK_ITEMS);
 
   // Catering form state
   const [cName, setCName] = useState("");
@@ -71,6 +92,15 @@ export default function OrderModal({
   useEffect(() => {
     if (open) {
       document.body.style.overflow = "hidden";
+      const supabase = createClient();
+      (async () => {
+        const [{ data: cats }, { data: items }] = await Promise.all([
+          supabase.from("menu_categories").select("id,name,display_order").eq("is_active", true).order("display_order"),
+          supabase.from("menu_items").select("id,category_id,name,price,is_available,display_order").eq("is_available", true).order("display_order"),
+        ]);
+        if (cats && cats.length > 0) setDbCategories(cats);
+        if (items && items.length > 0) setDbMenuItems(items);
+      })();
     } else {
       document.body.style.overflow = "";
     }
