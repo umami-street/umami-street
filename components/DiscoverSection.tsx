@@ -20,7 +20,7 @@ const usp = [
 
 export default function DiscoverSection() {
   return (
-    <section id="discover" className="py-24 bg-charcoal text-cream">
+    <section id="about" className="py-24 bg-charcoal text-cream">
       <div className="max-w-7xl mx-auto px-6">
         {/* Header */}
         <div className="text-center mb-16">

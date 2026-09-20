@@ -19,7 +19,7 @@ const BRANCHES = [
 
 export default function LocationSection() {
   return (
-    <section id="location" className="py-24 bg-cream">
+    <section id="contact" className="py-24 bg-cream">
       <div className="max-w-7xl mx-auto px-6">
         {/* Header */}
         <div className="text-center mb-14">
