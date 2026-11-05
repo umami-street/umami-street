@@ -663,15 +663,38 @@ function calc() {
 
   // ── P&L TABLE — Monthly / Q1 Actual / Annual Actual ──
   const q1 = qPLs[0], ann = annPL;
-  const sc = {b:'font-weight:700',cg:'color:var(--red)',sub:'color:var(--red);padding-left:14px;font-size:11px',gp:'font-weight:700;color:#2563EB',op:'color:var(--yellow)',sub2:'color:var(--yellow);padding-left:14px;font-size:11px',eb:'font-weight:700;color:var(--green)',nt:'font-weight:700'};
+  // td styles (text color / weight per row type)
+  const sc = {
+    b:    'font-weight:700',
+    cg:   'color:var(--red);font-weight:700',
+    sub:  'color:var(--red);padding-left:20px;font-size:11px;border-left:2px solid rgba(220,38,38,.2)',
+    gp:   'font-weight:700;color:#1D4ED8',
+    op:   'color:var(--yellow);font-weight:700',
+    sub2: 'color:var(--yellow);padding-left:20px;font-size:11px;border-left:2px solid rgba(180,83,9,.2)',
+    eb:   'font-weight:700;color:var(--green)',
+    nt:   'font-weight:700',
+  };
+  // tr background per row type
+  const bg = {
+    b:    '',
+    cg:   'background:rgba(220,38,38,.05);border-top:2px solid var(--border)',
+    sub:  'background:#FEFAFA',
+    gp:   'background:#EFF6FF;border-top:2px solid #BFDBFE;border-bottom:2px solid #BFDBFE',
+    op:   'background:rgba(180,83,9,.05);border-top:2px solid var(--border)',
+    sub2: 'background:#FDFCF8',
+    eb:   'background:var(--green-bg);border-top:2px solid #86EFAC;border-bottom:2px solid #86EFAC',
+    nt:   'background:var(--charcoal)',
+  };
+  const nt_td = 'color:var(--cream);font-weight:700';
 
   function tRow(label, mo, q1v, annv, s) {
-    const p0 = mo < 0 ? '−' : '', p1 = q1v < 0 ? '−' : '', p2 = annv < 0 ? '−' : '';
-    return `<tr>
-      <td style="${sc[s]||''}">${label}</td>
-      <td style="${sc[s]||''}">${p0}${fmt(Math.abs(mo))}</td>
-      <td style="${sc[s]||''}">${p1}${fmt(Math.abs(q1v))}</td>
-      <td style="${sc[s]||''}">${p2}${fmt(Math.abs(annv))}</td></tr>`;
+    const p0=mo<0?'−':'', p1=q1v<0?'−':'', p2=annv<0?'−':'';
+    const tdS = s==='nt' ? nt_td : (sc[s]||'');
+    return `<tr style="${bg[s]||''}">
+      <td style="${tdS}">${label}</td>
+      <td style="${tdS};text-align:right">${p0}${fmt(Math.abs(mo))}</td>
+      <td style="${tdS};text-align:right">${p1}${fmt(Math.abs(q1v))}</td>
+      <td style="${tdS};text-align:right">${p2}${fmt(Math.abs(annv))}</td></tr>`;
   }
 
   // Update table headers to reflect tracker
@@ -681,7 +704,7 @@ function calc() {
   document.getElementById('sum-tbody').innerHTML = [
     tRow('Gross Revenue',             mRev,     q1.rev,         ann.rev,         'b'),
     tRow('( − ) COGS',               -mCOGS,  -q1.cogs,       -ann.cogs,        'cg'),
-    tRow('↳ Inventory / Ingredients',-inv,     -inv*3*cogsRatio||(-inv*3), -inv*12*cogsRatio||(-inv*12), 'sub'),
+    tRow('↳ Inventory / Ingredients',-inv,     -inv*3,         -inv*12,          'sub'),
     tRow('↳ Packaging & Consumables',-pack,    -pack*3,        -pack*12,         'sub'),
     tRow('Gross Profit',              mGP,      q1.gp,          ann.gp,          'gp'),
     tRow('( − ) Operating Costs',    -mOpEx,  -q1.opex,       -ann.opex,        'op'),
