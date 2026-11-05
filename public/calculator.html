@@ -154,24 +154,38 @@ body{background:var(--bg);color:var(--charcoal);font-family:'Inter',sans-serif;f
       </div>
     </div>
 
-    <!-- COST OF GOODS -->
+    <!-- COST OF GOODS SOLD -->
     <div class="form-section">
       <div class="sec-head"><span class="sec-head-icon">🧾</span>Cost of Goods Sold (COGS)</div>
 
       <div class="field-row">
         <div class="field-label">
-          <div class="field-name">Food Cost Percentage</div>
-          <div class="field-hint">Ingredients + direct supplies as % of revenue. Wings/grilled: 30–38% · Drinks: 20–28%</div>
+          <div class="field-name">Inventory / Raw Ingredients</div>
+          <div class="field-hint">Monthly spend on chicken, sauces, spices, rice, drinks stock — everything you buy to make your menu items</div>
         </div>
         <div class="field-right">
-          <input class="field-input" id="foodcost" type="number" value="35" min="0" max="100" oninput="calc()">
-          <span class="field-sfx">%</span>
+          <span class="field-pfx">₱</span>
+          <input class="field-input" id="inv" type="number" value="45000" min="0" oninput="calc()">
         </div>
       </div>
 
-      <div class="calc-row">
-        <span class="calc-lbl">Monthly Food Cost</span>
-        <span class="calc-val rd" id="c-cogs">₱0</span>
+      <div class="field-row">
+        <div class="field-label">
+          <div class="field-name">Packaging &amp; Consumables</div>
+          <div class="field-hint">Boxes, cups, trays, napkins, foil, takeout bags — items used per order</div>
+        </div>
+        <div class="field-right">
+          <span class="field-pfx">₱</span>
+          <input class="field-input" id="pack" type="number" value="5000" min="0" oninput="calc()">
+        </div>
+      </div>
+
+      <div class="calc-row" style="justify-content:space-between;gap:8px">
+        <span class="calc-lbl">Total COGS</span>
+        <span style="display:flex;align-items:center;gap:8px">
+          <span class="calc-val rd" id="c-cogs">₱0</span>
+          <span style="font-size:10px;color:var(--muted);background:var(--border);padding:2px 6px;border-radius:10px" id="c-cogs-pct">0% of rev</span>
+        </span>
       </div>
     </div>
 
@@ -179,7 +193,7 @@ body{background:var(--bg);color:var(--charcoal);font-family:'Inter',sans-serif;f
     <div class="pl-banner gp">
       <div>
         <div class="pl-banner-lbl">= Gross Profit</div>
-        <div style="font-size:10px;color:#3B82F6;margin-top:1px">Revenue minus food cost</div>
+        <div style="font-size:10px;color:#3B82F6;margin-top:1px">Revenue minus total COGS</div>
       </div>
       <div style="display:flex;align-items:center">
         <div class="pl-banner-val" id="c-gp">₱0</div>
@@ -187,9 +201,9 @@ body{background:var(--bg);color:var(--charcoal);font-family:'Inter',sans-serif;f
       </div>
     </div>
 
-    <!-- FIXED COSTS -->
+    <!-- OPERATING COSTS -->
     <div class="form-section">
-      <div class="sec-head"><span class="sec-head-icon">🏪</span>Monthly Fixed Operating Costs</div>
+      <div class="sec-head"><span class="sec-head-icon">🏪</span>Monthly Operating Costs</div>
 
       <div class="field-row">
         <div class="field-label">
@@ -226,19 +240,8 @@ body{background:var(--bg);color:var(--charcoal);font-family:'Inter',sans-serif;f
 
       <div class="field-row">
         <div class="field-label">
-          <div class="field-name">Packaging &amp; Supplies</div>
-          <div class="field-hint">Boxes, cups, trays, napkins, takeout bags, etc.</div>
-        </div>
-        <div class="field-right">
-          <span class="field-pfx">₱</span>
-          <input class="field-input" id="pack" type="number" value="3000" min="0" oninput="calc()">
-        </div>
-      </div>
-
-      <div class="field-row">
-        <div class="field-label">
           <div class="field-name">Other Operating Costs</div>
-          <div class="field-hint">Permits, maintenance, miscellaneous monthly expenses</div>
+          <div class="field-hint">Permits, maintenance, delivery fees, miscellaneous monthly expenses</div>
         </div>
         <div class="field-right">
           <span class="field-pfx">₱</span>
@@ -247,25 +250,60 @@ body{background:var(--bg);color:var(--charcoal);font-family:'Inter',sans-serif;f
       </div>
 
       <div class="calc-row">
-        <span class="calc-lbl">Total Fixed Costs</span>
+        <span class="calc-lbl">Total Operating Costs</span>
         <span class="calc-val rd" id="c-opex">₱0</span>
       </div>
     </div>
 
-    <!-- MARKETING & DEBT -->
+    <!-- MARKETING -->
     <div class="form-section">
-      <div class="sec-head"><span class="sec-head-icon">📣</span>Marketing &amp; Debt Service</div>
+      <div class="sec-head"><span class="sec-head-icon">📣</span>Marketing Costs</div>
 
       <div class="field-row">
         <div class="field-label">
-          <div class="field-name">Monthly Marketing Budget</div>
-          <div class="field-hint">Boosted posts, flyers, promos, GCash QR setup, partnerships, etc.</div>
+          <div class="field-name">Boosted Posts / Paid Ads</div>
+          <div class="field-hint">Facebook/Instagram boost budget, TikTok ads, GrabFood sponsored listings</div>
         </div>
         <div class="field-right">
           <span class="field-pfx">₱</span>
-          <input class="field-input" id="mkt" type="number" value="2000" min="0" oninput="calc()">
+          <input class="field-input" id="mkt-ads" type="number" value="1000" min="0" oninput="calc()">
         </div>
       </div>
+
+      <div class="field-row">
+        <div class="field-label">
+          <div class="field-name">Promos &amp; Discounts</div>
+          <div class="field-hint">Buy-1-get-1, free delivery promos, loyalty freebies, combo deals</div>
+        </div>
+        <div class="field-right">
+          <span class="field-pfx">₱</span>
+          <input class="field-input" id="mkt-promo" type="number" value="500" min="0" oninput="calc()">
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field-label">
+          <div class="field-name">Collabs &amp; Other Marketing</div>
+          <div class="field-hint">Food blogger tie-ups, flyers, tarpaulins, event sponsorships</div>
+        </div>
+        <div class="field-right">
+          <span class="field-pfx">₱</span>
+          <input class="field-input" id="mkt-other" type="number" value="500" min="0" oninput="calc()">
+        </div>
+      </div>
+
+      <div class="calc-row" style="justify-content:space-between;gap:8px">
+        <span class="calc-lbl">Total Marketing</span>
+        <span style="display:flex;align-items:center;gap:8px">
+          <span class="calc-val rd" id="c-mkt">₱0</span>
+          <span style="font-size:10px;color:var(--muted);background:var(--border);padding:2px 6px;border-radius:10px" id="c-mkt-pct">0% of rev</span>
+        </span>
+      </div>
+    </div>
+
+    <!-- DEBT -->
+    <div class="form-section">
+      <div class="sec-head"><span class="sec-head-icon">🏦</span>Debt Service</div>
 
       <div class="field-row">
         <div class="field-label">
@@ -420,18 +458,22 @@ function g(id) { return parseFloat(document.getElementById(id).value) || 0; }
 function set(id, v) { document.getElementById(id).textContent = v; }
 
 function calc() {
-  const mRev    = g('rev');
-  const fcPct    = g('foodcost');
+  const mRev     = g('rev');
+  const inv      = g('inv');
+  const pack     = g('pack');
   const labor    = g('labor');
   const rent     = g('rent');
   const util     = g('util');
-  const pack     = g('pack');
   const other    = g('other');
-  const mkt      = g('mkt');
+  const mktAds   = g('mkt-ads');
+  const mktPromo = g('mkt-promo');
+  const mktOther = g('mkt-other');
   const debt     = g('debt');
-  const mCOGS   = mRev * (fcPct / 100);
+
+  const mCOGS   = inv + pack;
+  const mkt     = mktAds + mktPromo + mktOther;
   const mGP     = mRev - mCOGS;
-  const mOpEx   = labor + rent + util + pack + other;
+  const mOpEx   = labor + rent + util + other;
   const mEBITDA = mGP - mOpEx - mkt;
   const mNet    = mEBITDA - debt;
 
@@ -446,14 +488,17 @@ function calc() {
   const pEBITDA = mEBITDA * m;
   const pNet    = mNet * m;
 
-  // Inline form calcs (revenue field has no separate subtotal row now)
-  set('c-cogs', fmt(mCOGS));
-  set('c-gp',   (mGP < 0 ? '−' : '') + fmt(Math.abs(mGP)));
-  set('c-gp-pct', gpM.toFixed(1) + '%');
-  set('c-opex', fmt(mOpEx));
-  set('c-ebitda', (mEBITDA < 0 ? '−' : '') + fmt(Math.abs(mEBITDA)));
+  // Inline form calcs
+  set('c-cogs',     fmt(mCOGS));
+  set('c-cogs-pct', pct(mCOGS, mRev).toFixed(1) + '% of rev');
+  set('c-gp',       (mGP < 0 ? '−' : '') + fmt(Math.abs(mGP)));
+  set('c-gp-pct',   gpM.toFixed(1) + '%');
+  set('c-opex',     fmt(mOpEx));
+  set('c-mkt',      fmt(mkt));
+  set('c-mkt-pct',  pct(mkt, mRev).toFixed(1) + '% of rev');
+  set('c-ebitda',   (mEBITDA < 0 ? '−' : '') + fmt(Math.abs(mEBITDA)));
   set('c-ebitda-pct', eM.toFixed(1) + '%');
-  set('c-net',  (mNet < 0 ? '−' : '') + fmt(Math.abs(mNet)));
+  set('c-net',      (mNet < 0 ? '−' : '') + fmt(Math.abs(mNet)));
 
   // Period header
   set('results-title', lbl[period] + ' Financial Summary');
@@ -476,16 +521,25 @@ function calc() {
   set('m-net-pct', nM.toFixed(1) + '% net margin');
 
   // Summary table
-  const sc = {b:'font-weight:700',cg:'color:var(--red)',gp:'font-weight:700;color:#2563EB',op:'color:var(--yellow)',eb:'font-weight:700;color:var(--green)',nt:'font-weight:700'};
+  const sc = {b:'font-weight:700',cg:'color:var(--red)',sub:'color:var(--red);padding-left:14px;font-size:11px',gp:'font-weight:700;color:#2563EB',op:'color:var(--yellow)',sub2:'color:var(--yellow);padding-left:14px;font-size:11px',eb:'font-weight:700;color:var(--green)',nt:'font-weight:700'};
   const rows = [
-    {l:'Gross Revenue',         v: mRev,    s:'b'},
-    {l:'( − ) Food Cost',       v:-mCOGS,   s:'cg'},
-    {l:'Gross Profit',          v: mGP,     s:'gp'},
-    {l:'( − ) Fixed Op. Costs', v:-mOpEx,   s:'op'},
-    {l:'( − ) Marketing',       v:-mkt,     s:'op'},
-    {l:'EBITDA',                v: mEBITDA, s:'eb'},
-    ...(debt > 0 ? [{l:'( − ) Debt Service', v:-debt, s:'cg'}] : []),
-    {l:'Net Operating Income',  v: mNet,    s:'nt'},
+    {l:'Gross Revenue',              v: mRev,    s:'b'},
+    {l:'( − ) COGS',                 v:-mCOGS,   s:'cg'},
+    {l:'↳ Inventory / Ingredients',  v:-inv,     s:'sub'},
+    {l:'↳ Packaging & Consumables',  v:-pack,    s:'sub'},
+    {l:'Gross Profit',               v: mGP,     s:'gp'},
+    {l:'( − ) Operating Costs',      v:-mOpEx,   s:'op'},
+    {l:'↳ Labor / Wages',            v:-labor,   s:'sub2'},
+    {l:'↳ Rent / Stall Fee',         v:-rent,    s:'sub2'},
+    {l:'↳ Utilities',                v:-util,    s:'sub2'},
+    ...(other > 0 ? [{l:'↳ Other Costs', v:-other, s:'sub2'}] : []),
+    {l:'( − ) Marketing',            v:-mkt,     s:'op'},
+    {l:'↳ Paid Ads',                 v:-mktAds,  s:'sub2'},
+    ...(mktPromo > 0 ? [{l:'↳ Promos & Discounts', v:-mktPromo, s:'sub2'}] : []),
+    ...(mktOther > 0 ? [{l:'↳ Collabs & Other',    v:-mktOther, s:'sub2'}] : []),
+    {l:'EBITDA',                     v: mEBITDA, s:'eb'},
+    ...(debt > 0 ? [{l:'( − ) Debt Service',       v:-debt,    s:'cg'}] : []),
+    {l:'Net Operating Income',       v: mNet,    s:'nt'},
   ];
   document.getElementById('sum-tbody').innerHTML = rows.map(r => {
     const pf = r.v < 0 ? '−' : '';
