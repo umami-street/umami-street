@@ -144,40 +144,13 @@ body{background:var(--bg);color:var(--charcoal);font-family:'Inter',sans-serif;f
 
       <div class="field-row">
         <div class="field-label">
-          <div class="field-name">Average Daily Orders</div>
-          <div class="field-hint">How many customer transactions do you serve per day on average?</div>
-        </div>
-        <div class="field-right">
-          <input class="field-input" id="orders" type="number" value="30" min="0" oninput="calc()">
-          <span class="field-sfx">orders/day</span>
-        </div>
-      </div>
-
-      <div class="field-row">
-        <div class="field-label">
-          <div class="field-name">Average Order Value</div>
-          <div class="field-hint">Typical spend per customer — solo order, group order average</div>
+          <div class="field-name">Monthly Gross Revenue</div>
+          <div class="field-hint">Total sales income for the month — check your GCash summary, cash count, or POS total. Include all menu items combined.</div>
         </div>
         <div class="field-right">
           <span class="field-pfx">₱</span>
-          <input class="field-input" id="aov" type="number" value="200" min="0" oninput="calc()">
+          <input class="field-input" id="rev" type="number" value="156000" min="0" oninput="calc()" style="width:140px">
         </div>
-      </div>
-
-      <div class="field-row">
-        <div class="field-label">
-          <div class="field-name">Operating Days per Month</div>
-          <div class="field-hint">How many days are you open? (26 = closed Sundays + 2 holidays)</div>
-        </div>
-        <div class="field-right">
-          <input class="field-input" id="days" type="number" value="26" min="1" max="31" oninput="calc()">
-          <span class="field-sfx">days</span>
-        </div>
-      </div>
-
-      <div class="calc-row">
-        <span class="calc-lbl">Monthly Gross Revenue</span>
-        <span class="calc-val" id="c-rev">₱0</span>
       </div>
     </div>
 
@@ -447,9 +420,7 @@ function g(id) { return parseFloat(document.getElementById(id).value) || 0; }
 function set(id, v) { document.getElementById(id).textContent = v; }
 
 function calc() {
-  const orders   = g('orders');
-  const aov      = g('aov');
-  const days     = g('days');
+  const mRev    = g('rev');
   const fcPct    = g('foodcost');
   const labor    = g('labor');
   const rent     = g('rent');
@@ -458,8 +429,6 @@ function calc() {
   const other    = g('other');
   const mkt      = g('mkt');
   const debt     = g('debt');
-
-  const mRev    = orders * aov * days;
   const mCOGS   = mRev * (fcPct / 100);
   const mGP     = mRev - mCOGS;
   const mOpEx   = labor + rent + util + pack + other;
@@ -477,8 +446,7 @@ function calc() {
   const pEBITDA = mEBITDA * m;
   const pNet    = mNet * m;
 
-  // Inline form calcs
-  set('c-rev',  fmt(mRev));
+  // Inline form calcs (revenue field has no separate subtotal row now)
   set('c-cogs', fmt(mCOGS));
   set('c-gp',   (mGP < 0 ? '−' : '') + fmt(Math.abs(mGP)));
   set('c-gp-pct', gpM.toFixed(1) + '%');
@@ -493,7 +461,7 @@ function calc() {
 
   // Big 4
   set('m-rev', fmt(pRev));
-  set('m-rev-sub', Math.round(orders * days * m).toLocaleString() + ' orders');
+  set('m-rev-sub', period === 'monthly' ? 'this month' : (period === 'quarterly' ? '3-month total' : '12-month total'));
   set('m-gp', fmt(pGP));
   set('m-gp-pct', gpM.toFixed(1) + '% gross margin');
 
