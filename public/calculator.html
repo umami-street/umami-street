@@ -3,868 +3,658 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Umami Street — Profitability Calculator</title>
+<title>Umami Street Profitability Calculator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#F3EFE9;--card:#fff;--charcoal:#2C2C2C;--maroon:#8B1A1A;
-  --cream:#F5F0E8;--muted:#7A746E;--border:#E5DFD4;
-  --green:#16A34A;--yellow:#B45309;--red:#DC2626;
-  --green-bg:#F0FDF4;--yellow-bg:#FFFBEB;--red-bg:#FEF2F2;
-  --shadow:0 1px 3px rgba(0,0,0,.07),0 4px 14px rgba(0,0,0,.04);
+  --bg:#F4F0EA;--card:#fff;--ink:#2C2C2C;--soft:#4A4540;--maroon:#8B1A1A;--maroon-50:#F8EDEC;
+  --cream:#F5F0E8;--muted:#776F68;--faint:#BDB3A7;--line:#E6DFD5;--line-2:#D6CCBF;--tint:#FAF7F2;
+  --green:#15803D;--green-50:#ECFDF3;--amber:#9A4A06;--amber-50:#FFF8EB;--red:#C62828;--red-50:#FDF0EF;
+  --blue:#1D4ED8;--blue-50:#EEF4FF;
+  --shadow:0 1px 2px rgba(0,0,0,.05),0 6px 20px rgba(0,0,0,.04);
 }
-body{background:var(--bg);color:var(--charcoal);font-family:'Inter',sans-serif;font-size:14px;line-height:1.5;min-height:100vh}
+body{background:var(--bg);color:var(--ink);font:14px/1.5 'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+button{font:inherit;cursor:pointer}
+.serif{font-family:'Playfair Display',Georgia,serif}
 
-/* HEADER */
-.header{background:var(--charcoal);padding:16px 28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
-.header-left{display:flex;align-items:center;gap:14px}
-.logo{width:40px;height:40px;background:var(--maroon);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
-.header-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--cream)}
-.header-sub{font-size:11px;color:rgba(245,240,232,.45);margin-top:1px}
-.period-wrap{display:flex;gap:5px}
-.pbtn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:rgba(245,240,232,.55);padding:5px 14px;cursor:pointer;font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;font-family:'Inter',sans-serif;border-radius:2px;transition:all .15s}
-.pbtn:hover{color:var(--cream);border-color:rgba(255,255,255,.3)}
-.pbtn.active{background:var(--maroon);border-color:var(--maroon);color:var(--cream)}
+/* Header */
+.header{background:var(--ink);color:var(--cream);padding:18px 28px}
+.header-in{max-width:1320px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:14px}
+.logo{width:42px;height:42px;border-radius:50%;background:var(--maroon);display:grid;place-items:center;font-family:'Playfair Display',serif;font-size:20px;flex-shrink:0}
+.title{font-family:'Playfair Display',serif;font-size:21px;line-height:1.2}
+.subtitle{font-size:12px;color:rgba(245,240,232,.6)}
+.hactions{display:flex;gap:8px}
+.hbtn{background:transparent;border:1px solid rgba(245,240,232,.28);color:var(--cream);padding:7px 14px;font-size:12px;font-weight:600;border-radius:5px;transition:all .15s}
+.hbtn:hover{border-color:var(--cream)}
+.hbtn.danger:hover{background:var(--red);border-color:var(--red)}
 
-/* LAYOUT */
-.layout{display:grid;grid-template-columns:440px 1fr;gap:20px;padding:20px 28px;max-width:1300px;margin:0 auto}
+/* Month bar */
+.monthbar{position:sticky;top:0;z-index:10;background:var(--card);border-bottom:1px solid var(--line);box-shadow:0 2px 10px rgba(0,0,0,.04)}
+.monthbar-in{max-width:1320px;margin:0 auto;padding:10px 28px;display:flex;align-items:center;gap:16px}
+.mb-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);flex-shrink:0}
+.tabs{display:flex;gap:4px;overflow-x:auto;flex:1;scrollbar-width:none;padding:2px}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;min-width:54px;padding:7px 8px 8px;border:1px solid var(--line);background:#fff;border-radius:6px;font-size:12px;font-weight:600;color:var(--faint);display:flex;flex-direction:column;align-items:center;gap:4px;transition:all .12s}
+.tab:hover{border-color:var(--line-2);color:var(--ink)}
+.tab i{width:6px;height:6px;border-radius:50%;background:var(--line)}
+.tab.full{color:var(--ink)} .tab.full i{background:var(--maroon)}
+.tab.part{color:var(--ink)} .tab.part i{background:#E0A030}
+.tab.on{background:var(--maroon);border-color:var(--maroon);color:var(--cream)} .tab.on i{background:var(--cream)}
+.tab.qs{margin-left:10px}
+.legend{font-size:11px;color:var(--muted);display:flex;gap:12px;flex-shrink:0}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend i{width:7px;height:7px;border-radius:50%;display:inline-block}
 
-/* FORM SIDE */
-.form-section{background:var(--card);border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:14px}
-.sec-head{background:var(--charcoal);color:var(--cream);padding:10px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;display:flex;align-items:center;gap:8px}
-.sec-head-icon{font-size:14px}
+/* Layout */
+.layout{max-width:1320px;margin:0 auto;padding:24px 28px 64px;display:grid;grid-template-columns:minmax(0,440px) minmax(0,1fr);gap:24px;align-items:start}
 
-/* Field rows */
-.field-row{display:flex;align-items:center;gap:12px;padding:11px 16px;border-bottom:1px solid var(--border)}
-.field-row:last-child{border-bottom:none}
-.field-label{flex:1;min-width:0}
-.field-name{font-size:12px;font-weight:600;color:var(--charcoal);line-height:1.3}
-.field-hint{font-size:10px;color:var(--muted);margin-top:2px;line-height:1.3}
-.field-right{display:flex;align-items:center;gap:5px;flex-shrink:0}
-.field-pfx{font-size:13px;font-weight:700;color:var(--muted);width:12px;text-align:right;flex-shrink:0}
-.field-sfx{font-size:11px;color:var(--muted);white-space:nowrap}
-.field-input{border:2px solid var(--border);padding:7px 10px;font-size:14px;font-weight:700;text-align:right;width:120px;color:var(--charcoal);background:#fff;font-family:'Inter',sans-serif;border-radius:2px;transition:border-color .15s}
-.field-input:focus{outline:none;border-color:var(--maroon);background:rgba(139,26,26,.03)}
-.field-input:hover{border-color:#C4BDB3}
+/* Form */
+.form-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:10px;flex-wrap:wrap}
+.eyebrow{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--maroon)}
+.form-month{font-family:'Playfair Display',serif;font-size:28px;line-height:1.1}
+.status{display:inline-block;margin-top:6px;font-size:11px;font-weight:600;padding:2px 9px;border-radius:999px;background:#F2EDE6;color:var(--muted)}
+.status.full{background:var(--green-50);color:var(--green)}
+.status.part{background:var(--amber-50);color:var(--amber)}
+.tools{display:flex;gap:6px;flex-wrap:wrap}
+.tbtn{background:#fff;border:1px solid var(--line-2);padding:6px 10px;font-size:11px;font-weight:600;border-radius:5px;color:var(--ink)}
+.tbtn:hover:not(:disabled){border-color:var(--maroon);color:var(--maroon)}
+.tbtn:disabled{opacity:.45;cursor:not-allowed}
+.note{font-size:11.5px;color:var(--muted);padding:8px 12px;border:1px dashed var(--line-2);border-radius:6px;margin-bottom:14px;background:rgba(255,255,255,.5)}
 
-/* Auto-calculated subtotal rows */
-.calc-row{display:flex;align-items:center;justify-content:space-between;padding:9px 16px;background:#FAFAF8;border-top:1px solid var(--border)}
-.calc-lbl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
-.calc-val{font-size:14px;font-weight:700;color:var(--charcoal);font-family:'Playfair Display',serif}
-.calc-val.rd{color:var(--red)}.calc-val.gn{color:var(--green)}.calc-val.bl{color:#2563EB}
+.sec{background:var(--card);border:1px solid var(--line);border-radius:8px;box-shadow:var(--shadow);margin-bottom:12px;overflow:hidden}
+.sec-head{padding:9px 16px;font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;background:var(--tint);border-bottom:1px solid var(--line)}
+.row{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line);cursor:text}
+.row:last-child{border-bottom:0}
+.row-txt{flex:1;min-width:0;display:flex;flex-direction:column}
+.row-name{font-size:13px;font-weight:600}
+.row-hint{font-size:11px;color:var(--muted);line-height:1.35}
+.money{display:flex;align-items:center;border:1.5px solid var(--line-2);border-radius:6px;background:#fff;width:150px;flex-shrink:0;transition:border-color .15s,box-shadow .15s}
+.money:focus-within{border-color:var(--maroon);box-shadow:0 0 0 3px rgba(139,26,26,.12)}
+.cur{padding-left:10px;color:var(--muted);font-weight:600;font-size:13px}
+.money input{border:0;outline:0;background:transparent;width:100%;min-width:0;padding:8px 10px 8px 6px;text-align:right;font:600 15px 'Inter',sans-serif;font-variant-numeric:tabular-nums;color:var(--ink)}
+.money input::placeholder{color:#CFC6BA;font-weight:500}
+.sub{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 16px;background:var(--tint);border-top:1px solid var(--line);font-size:12px;font-weight:600;color:var(--muted)}
+.sub-r{display:flex;align-items:center;gap:8px}
+.sub-pct{font-size:10.5px;font-weight:600;background:#EFE8DE;color:var(--muted);padding:2px 7px;border-radius:999px}
+.sub-pct:empty{display:none}
+.sub-val{color:var(--ink);font-weight:700;font-variant-numeric:tabular-nums}
 
-/* P&L subtotal banners */
-.pl-banner{display:flex;align-items:center;justify-content:space-between;padding:11px 16px;margin-bottom:14px;border:1px solid}
-.pl-banner.gp{background:#EFF6FF;border-color:#BFDBFE}
-.pl-banner.ebitda{background:var(--green-bg);border-color:#86EFAC}
-.pl-banner.net{background:var(--charcoal);border-color:var(--charcoal)}
-.pl-banner-lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em}
-.pl-banner.gp .pl-banner-lbl{color:#1D4ED8}
-.pl-banner.ebitda .pl-banner-lbl{color:#15803D}
-.pl-banner.net .pl-banner-lbl{color:rgba(245,240,232,.6)}
-.pl-banner-val{font-size:18px;font-weight:700;font-family:'Playfair Display',serif}
-.pl-banner.gp .pl-banner-val{color:#1D4ED8}
-.pl-banner.ebitda .pl-banner-val{color:#15803D}
-.pl-banner.net .pl-banner-val{color:var(--cream)}
-.pl-banner-margin{font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;margin-left:8px}
-.pl-banner.gp .pl-banner-margin{background:#DBEAFE;color:#1D4ED8}
-.pl-banner.ebitda .pl-banner-margin{background:#DCFCE7;color:#15803D}
+.band{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 16px;border-radius:8px;margin-bottom:12px;border:1px solid}
+.band-gp{background:var(--blue-50);border-color:#C7D7FB;color:var(--blue)}
+.band-ebitda{background:var(--green-50);border-color:#A7E3BD;color:var(--green)}
+.band-net{background:var(--ink);border-color:var(--ink);color:var(--cream)}
+.band-lbl{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.07em}
+.band-hint{font-size:11px;opacity:.7}
+.band-val{font-family:'Playfair Display',serif;font-size:21px;font-weight:700;text-align:right;font-variant-numeric:tabular-nums}
+.band-pct{font-size:11px;text-align:right;opacity:.75}
+.band .loss{color:var(--red)}
+.band-net .loss{color:#FF8A80}
 
-/* RESULTS SIDE */
-.card{background:var(--card);border:1px solid var(--border);box-shadow:var(--shadow);padding:18px;margin-bottom:14px}
-.card:last-child{margin-bottom:0}
-.card-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--maroon);margin-bottom:14px;padding-bottom:9px;border-bottom:1px solid var(--border)}
+/* Cards */
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px;box-shadow:var(--shadow);padding:20px;margin-bottom:16px}
+.card-h{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.card-t{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--maroon)}
+.card-s{font-size:12px;color:var(--muted)}
+.seg{display:inline-flex;background:#F2EDE6;border-radius:7px;padding:3px}
+.seg button{border:0;background:transparent;padding:6px 14px;font-size:12px;font-weight:600;color:var(--muted);border-radius:5px}
+.seg button.on{background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.1)}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.m{border:1px solid var(--line);border-radius:6px;padding:12px 14px;background:#FCFAF7}
+.m-l{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.m-v{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;margin:3px 0 1px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.m-v.loss{color:var(--red)} .m-v.na{color:var(--faint)}
+.m-s{font-size:11px;color:var(--muted)}
+.warn{margin-top:12px;font-size:12px;padding:9px 12px;border-radius:6px;background:var(--amber-50);color:var(--amber);border:1px solid #F3D9A9}
+.warn:empty{display:none}
 
-.metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.mc{background:var(--bg);border:1px solid var(--border);padding:12px 14px}
-.mc-lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:3px}
-.mc-val{font-size:20px;font-weight:700;color:var(--charcoal);font-family:'Playfair Display',serif;line-height:1.1}
-.mc-val.hi{color:var(--maroon)}.mc-val.gn{color:var(--green)}.mc-val.rd{color:var(--red)}
-.mc-sub{font-size:10px;color:var(--muted);margin-top:2px}
+/* Tables */
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);text-align:right;padding:8px 10px;border-bottom:2px solid var(--line);vertical-align:bottom;white-space:nowrap}
+th:first-child{text-align:left}
+th small{display:block;font-weight:500;text-transform:none;letter-spacing:0;font-size:10.5px;color:var(--faint)}
+td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+td:first-child{text-align:left;white-space:normal}
+td.na{color:var(--faint)}
+td.loss{color:var(--red);font-weight:600}
+.pl tr.parent td{font-weight:700;background:var(--tint);border-top:1px solid var(--line-2)}
+.pl tr.child td{font-size:12px;color:var(--soft)}
+.pl tr.child td:first-child{padding-left:30px;position:relative}
+.pl tr.child td:first-child::before{content:'';position:absolute;left:15px;top:0;bottom:0;border-left:2px solid var(--line-2)}
+.pl tr.total td{font-weight:700;font-size:13.5px}
+.pl tr.gp td{background:var(--blue-50);color:var(--blue);font-weight:700;border-top:1px solid #C7D7FB;border-bottom:1px solid #C7D7FB}
+.pl tr.eb td{background:var(--green-50);color:var(--green);font-weight:700;border-top:1px solid #A7E3BD;border-bottom:1px solid #A7E3BD}
+.pl tr.net td{background:var(--ink);color:var(--cream);font-weight:700;border-bottom:0}
+.pl tr.gp td.loss,.pl tr.eb td.loss{color:var(--red)}
+.pl tr.net td.loss{color:#FF8A80}
+.pl tr td.na{color:var(--faint)}
+.pl tr.net td.na{color:#7A746E}
+.mt tbody tr{cursor:pointer}
+.mt tbody tr:hover td{background:var(--tint)}
+.mt tr.sel td{background:var(--maroon-50)}
+.mt tr.none td{color:var(--faint)}
+.mt tr.none td:first-child{color:var(--muted)}
+.mt tfoot td{font-weight:700;border-top:2px solid var(--line-2);border-bottom:0}
+.mt tfoot tr.avg td{font-weight:500;color:var(--muted)}
 
-/* Summary table */
-.sum-table{width:100%;border-collapse:collapse;font-size:12px}
-.sum-table th{text-align:right;padding:5px 7px;color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;border-bottom:2px solid var(--border)}
-.sum-table th:first-child{text-align:left}
-.sum-table td{padding:6px 7px;border-bottom:1px solid var(--border)}
-.sum-table td:not(:first-child){text-align:right;font-variant-numeric:tabular-nums}
-.sum-table tr:last-child td{border-bottom:none}
+/* Decisions */
+.settings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 16px;margin-bottom:16px;padding:14px;background:var(--tint);border:1px solid var(--line);border-radius:8px}
+.set{display:flex;flex-direction:column;gap:3px}
+.set-l{font-size:12px;font-weight:600}
+.set-h{font-size:10.5px;color:var(--muted);line-height:1.35}
+.field{display:flex;align-items:center;border:1.5px solid var(--line-2);border-radius:6px;background:#fff;margin-top:2px}
+.field:focus-within{border-color:var(--maroon);box-shadow:0 0 0 3px rgba(139,26,26,.12)}
+.field input{border:0;outline:0;background:transparent;width:100%;min-width:0;padding:7px 10px;font:600 14px 'Inter',sans-serif;font-variant-numeric:tabular-nums;text-align:right}
+.field input::placeholder{color:#CFC6BA;font-weight:500}
+.unit{padding:0 10px;font-size:11px;color:var(--muted);white-space:nowrap}
+.unit.pre{padding-right:0}
+.conf{font-size:12px;padding:10px 12px;border-radius:6px;margin-bottom:14px;border:1px solid}
+.conf.nt{background:#F2EDE6;color:var(--muted);border-color:var(--line)}
+.conf.wn{background:var(--amber-50);color:var(--amber);border-color:#F3D9A9}
+.conf.gd{background:var(--green-50);color:var(--green);border-color:#A7E3BD}
+.dec{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.dc{border:1px solid var(--line);border-left:4px solid var(--line-2);border-radius:6px;padding:12px 14px;background:#fff;display:flex;flex-direction:column}
+.dc.gd{border-left-color:var(--green)} .dc.wn{border-left-color:#E0A030} .dc.bd{border-left-color:var(--red)}
+.dc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px}
+.dc-title{font-size:12.5px;font-weight:700}
+.pill{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.pill.gd{background:var(--green-50);color:var(--green)}
+.pill.wn{background:var(--amber-50);color:var(--amber)}
+.pill.bd{background:var(--red-50);color:var(--red)}
+.pill.nt{background:#F2EDE6;color:var(--muted)}
+.dc-val{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;margin-bottom:4px;font-variant-numeric:tabular-nums}
+.dc.nt .dc-val{color:var(--faint)}
+.dc-note{font-size:12px;color:var(--soft);line-height:1.45}
+.dc-basis{margin-top:auto;padding-top:8px;font-size:10.5px;color:var(--muted)}
+.dc-basis:not(:empty){border-top:1px dashed var(--line);margin-top:8px}
 
-/* Decision grid */
-.dec-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.dc{border:1px solid var(--border);padding:14px}
-.dc.gd{border-color:#86EFAC;background:var(--green-bg)}
-.dc.wn{border-color:#FDE68A;background:var(--yellow-bg)}
-.dc.bd{border-color:#FCA5A5;background:var(--red-bg)}
-.dc.nt{background:var(--bg)}
-.dc-icon{font-size:18px;margin-bottom:6px}
-.dc-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:3px}
-.dc-val{font-size:16px;font-weight:700;color:var(--charcoal);font-family:'Playfair Display',serif;margin-bottom:3px}
-.dc-note{font-size:11px;color:var(--muted);line-height:1.4}
-.gauge-wrap{margin-top:7px}
-.gauge-track{height:5px;background:var(--border);border-radius:3px}
-.gauge-fill{height:100%;border-radius:3px;transition:width .3s;max-width:100%}
-.gauge-marks{display:flex;justify-content:space-between;margin-top:2px;font-size:9px;color:var(--muted)}
+.ins{list-style:none;display:flex;flex-direction:column;gap:8px}
+.ins li{font-size:12.5px;line-height:1.5;padding:10px 12px;border-radius:6px;background:var(--tint);border-left:3px solid var(--line-2)}
+.ins li.bd{border-left-color:var(--red)} .ins li.wn{border-left-color:#E0A030} .ins li.gd{border-left-color:var(--green)}
 
-/* Insights */
-.insight{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;background:var(--bg);border:1px solid var(--border);font-size:12px;line-height:1.55}
-.insight+.insight{margin-top:6px}
-.i-icon{font-size:14px;flex-shrink:0;margin-top:1px}
-
-/* Monthly tracker */
-.month-grid{display:grid;grid-template-columns:repeat(3,1fr) 110px;gap:8px;align-items:end}
-.month-sep{grid-column:1/-1;height:1px;background:var(--border);margin:4px 0}
-.month-cell{display:flex;flex-direction:column;gap:3px}
-.month-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
-.month-row-inner{display:flex;align-items:center;gap:3px}
-.mpfx{font-size:11px;color:var(--muted);font-weight:600;flex-shrink:0}
-.month-input{border:1px solid var(--border);padding:5px 7px;font-size:12px;font-weight:600;text-align:right;width:100%;font-family:'Inter',sans-serif;border-radius:2px;background:#FAFAF8;color:var(--muted);transition:border-color .15s}
-.month-input:focus{outline:none;border-color:var(--maroon);background:#fff;color:var(--charcoal)}
-.month-input.actual{border-color:var(--maroon);background:rgba(139,26,26,.04);color:var(--charcoal)}
-.qcol{background:var(--bg);border:1px solid var(--border);padding:8px 10px;display:flex;flex-direction:column;gap:2px}
-.qlbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--maroon)}
-.qrev{font-size:13px;font-weight:700;color:var(--charcoal);font-family:'Playfair Display',serif}
-.qnet{font-size:10px;color:var(--green);font-weight:600}
-.qsub{font-size:9px;color:var(--muted)}
-.ann-row{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--charcoal);margin-top:4px}
-.ann-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(245,240,232,.5)}
-.ann-block{text-align:right}
-.ann-val{font-size:16px;font-weight:700;color:var(--cream);font-family:'Playfair Display',serif}
-.ann-sub{font-size:10px;color:rgba(245,240,232,.4);margin-top:1px}
-
-@media(max-width:900px){.layout{grid-template-columns:1fr;padding:14px 16px}.header{padding:14px 16px}.period-wrap{flex-wrap:wrap}}
-@media(max-width:460px){.metric-grid,.dec-grid{grid-template-columns:1fr}.field-input{width:100px}.month-grid{grid-template-columns:repeat(3,1fr);}.qcol{display:none}}
+@media(max-width:1040px){.layout{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){
+  .header,.monthbar-in,.layout{padding-left:16px;padding-right:16px}
+  .legend,.mb-label{display:none}
+  .dec,.settings{grid-template-columns:1fr}
+  .row{flex-wrap:wrap}
+  .money{width:100%}
+  .card{padding:16px}
+}
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div class="header-left">
-    <div class="logo">🍜</div>
-    <div>
-      <div class="header-title">Umami Street — Profitability Calculator</div>
-      <div class="header-sub">Fill in your actual figures · Results update automatically · All amounts in ₱</div>
+<header class="header">
+  <div class="header-in">
+    <div class="brand">
+      <div class="logo">U</div>
+      <div>
+        <div class="title">Profitability Calculator</div>
+        <div class="subtitle">Umami Street · Enter actual figures per month. Nothing is projected or assumed.</div>
+      </div>
+    </div>
+    <div class="hactions">
+      <button class="hbtn" onclick="exportCSV()">Export CSV</button>
+      <button class="hbtn danger" onclick="clearAll()">Clear all data</button>
     </div>
   </div>
-  <div class="period-wrap">
-    <button class="pbtn active" onclick="setPeriod('monthly',this)">Monthly</button>
-    <button class="pbtn" onclick="setPeriod('quarterly',this)">Quarterly</button>
-    <button class="pbtn" onclick="setPeriod('yearly',this)">Yearly</button>
+</header>
+
+<nav class="monthbar">
+  <div class="monthbar-in">
+    <span class="mb-label">Month</span>
+    <div class="tabs" id="tabs"></div>
+    <div class="legend">
+      <span><i style="background:var(--maroon)"></i>Entered</span>
+      <span><i style="background:#E0A030"></i>Sales missing</span>
+      <span><i style="background:var(--line)"></i>Empty</span>
+    </div>
   </div>
-</div>
+</nav>
 
-<div class="layout">
+<main class="layout">
 
-  <!-- LEFT: DATA ENTRY FORM -->
-  <div>
-
-    <!-- REVENUE (derived from monthly tracker) -->
-    <div style="background:var(--charcoal);border:1px solid var(--charcoal);padding:12px 16px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+  <!-- LEFT: data entry for the selected month -->
+  <section>
+    <div class="form-head">
       <div>
-        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(245,240,232,.5)">Monthly Revenue Average</div>
-        <div style="font-size:10px;color:rgba(245,240,232,.3);margin-top:2px">Auto-calculated from your monthly tracker on the right</div>
+        <div class="eyebrow">Entering data for</div>
+        <div class="form-month" id="form-month">January</div>
+        <span class="status" id="form-status">No data yet</span>
       </div>
-      <div style="font-size:22px;font-weight:700;font-family:'Playfair Display',serif;color:var(--cream)" id="c-rev-avg">₱0</div>
-    </div>
-
-    <!-- COST OF GOODS SOLD -->
-    <div class="form-section">
-      <div class="sec-head"><span class="sec-head-icon">🧾</span>Cost of Goods Sold (COGS)</div>
-
-      <div class="field-row">
-        <div class="field-label">
-          <div class="field-name">Inventory / Raw Ingredients</div>
-          <div class="field-hint">Monthly spend on chicken, sauces, spices, rice, drinks stock — everything you buy to make your menu items</div>
-        </div>
-        <div class="field-right">
-          <span class="field-pfx">₱</span>
-          <input class="field-input" id="inv" type="number" value="45000" min="0" oninput="calc()">
-        </div>
-      </div>
-
-      <div class="field-row">
-        <div class="field-label">
-          <div class="field-name">Packaging &amp; Consumables</div>
-          <div class="field-hint">Boxes, cups, trays, napkins, foil, takeout bags — items used per order</div>
-        </div>
-        <div class="field-right">
-          <span class="field-pfx">₱</span>
-          <input class="field-input" id="pack" type="number" value="5000" min="0" oninput="calc()">
-        </div>
-      </div>
-
-      <div class="calc-row" style="justify-content:space-between;gap:8px">
-        <span class="calc-lbl">Total COGS</span>
-        <span style="display:flex;align-items:center;gap:8px">
-          <span class="calc-val rd" id="c-cogs">₱0</span>
-          <span style="font-size:10px;color:var(--muted);background:var(--border);padding:2px 6px;border-radius:10px" id="c-cogs-pct">0% of rev</span>
-        </span>
+      <div class="tools">
+        <button class="tbtn" id="copy-btn" onclick="copyPrev()">Copy costs from previous month</button>
+        <button class="tbtn" onclick="clearMonth()">Clear month</button>
       </div>
     </div>
+    <div class="note">Empty cost fields count as ₱0. A month is included in totals only after its sales are entered. Data is saved in this browser only.</div>
+    <div id="form"></div>
+  </section>
 
-    <!-- GROSS PROFIT BANNER -->
-    <div class="pl-banner gp">
-      <div>
-        <div class="pl-banner-lbl">= Gross Profit</div>
-        <div style="font-size:10px;color:#3B82F6;margin-top:1px">Revenue minus total COGS</div>
-      </div>
-      <div style="display:flex;align-items:center">
-        <div class="pl-banner-val" id="c-gp">₱0</div>
-        <div class="pl-banner-margin" id="c-gp-pct">0%</div>
-      </div>
-    </div>
+  <!-- RIGHT: results -->
+  <section>
 
-    <!-- OPERATING COSTS -->
-    <div class="form-section">
-      <div class="sec-head"><span class="sec-head-icon">🏪</span>Monthly Operating Costs</div>
-
-      <div class="field-row">
-        <div class="field-label">
-          <div class="field-name">Labor / Wages</div>
-          <div class="field-hint">Total monthly salaries + daily wages for all staff</div>
-        </div>
-        <div class="field-right">
-          <span class="field-pfx">₱</span>
-          <input class="field-input" id="labor" type="number" value="15000" min="0" oninput="calc()">
-        </div>
-      </div>
-
-      <div class="field-row">
-        <div class="field-label">
-          <div class="field-name">Rent / Stall Fee</div>
-          <div class="field-hint">Monthly rent for your stall, kiosk, or space</div>
-        </div>
-        <div class="field-right">
-          <span class="field-pfx">₱</span>
-          <input class="field-input" id="rent" type="number" value="8000" min="0" oninput="calc()">
-        </div>
-      </div>
-
-      <div class="field-row">
-        <div class="field-label">
-          <div class="field-name">Utilities</div>
-          <div class="field-hint">Electricity, gas (LPG), water — monthly average</div>
-        </div>
-        <div class="field-right">
-          <span class="field-pfx">₱</span>
-          <input class="field-input" id="util" type="number" value="4000" min="0" oninput="calc()">
-        </div>
-      </div>
-
-      <div class="field-row">
-        <div class="field-label">
-          <div class="field-name">Other Operating Costs</div>
-          <div class="field-hint">Permits, maintenance, delivery fees, miscellaneous monthly expenses</div>
-        </div>
-        <div class="field-right">
-          <span class="field-pfx">₱</span>
-          <input class="field-input" id="other" type="number" value="2000" min="0" oninput="calc()">
-        </div>
-      </div>
-
-      <div class="calc-row">
-        <span class="calc-lbl">Total Operating Costs</span>
-        <span class="calc-val rd" id="c-opex">₱0</span>
-      </div>
-    </div>
-
-    <!-- MARKETING -->
-    <div class="form-section">
-      <div class="sec-head"><span class="sec-head-icon">📣</span>Marketing Costs</div>
-
-      <div class="field-row">
-        <div class="field-label">
-          <div class="field-name">Boosted Posts / Paid Ads</div>
-          <div class="field-hint">Facebook/Instagram boost budget, TikTok ads, GrabFood sponsored listings</div>
-        </div>
-        <div class="field-right">
-          <span class="field-pfx">₱</span>
-          <input class="field-input" id="mkt-ads" type="number" value="1000" min="0" oninput="calc()">
-        </div>
-      </div>
-
-      <div class="field-row">
-        <div class="field-label">
-          <div class="field-name">Promos &amp; Discounts</div>
-          <div class="field-hint">Buy-1-get-1, free delivery promos, loyalty freebies, combo deals</div>
-        </div>
-        <div class="field-right">
-          <span class="field-pfx">₱</span>
-          <input class="field-input" id="mkt-promo" type="number" value="500" min="0" oninput="calc()">
-        </div>
-      </div>
-
-      <div class="field-row">
-        <div class="field-label">
-          <div class="field-name">Collabs &amp; Other Marketing</div>
-          <div class="field-hint">Food blogger tie-ups, flyers, tarpaulins, event sponsorships</div>
-        </div>
-        <div class="field-right">
-          <span class="field-pfx">₱</span>
-          <input class="field-input" id="mkt-other" type="number" value="500" min="0" oninput="calc()">
-        </div>
-      </div>
-
-      <div class="calc-row" style="justify-content:space-between;gap:8px">
-        <span class="calc-lbl">Total Marketing</span>
-        <span style="display:flex;align-items:center;gap:8px">
-          <span class="calc-val rd" id="c-mkt">₱0</span>
-          <span style="font-size:10px;color:var(--muted);background:var(--border);padding:2px 6px;border-radius:10px" id="c-mkt-pct">0% of rev</span>
-        </span>
-      </div>
-    </div>
-
-    <!-- DEBT -->
-    <div class="form-section">
-      <div class="sec-head"><span class="sec-head-icon">🏦</span>Debt Service</div>
-
-      <div class="field-row">
-        <div class="field-label">
-          <div class="field-name">Existing Loan Payments</div>
-          <div class="field-hint">Monthly amortization — SSS Salary Loan, bank, DTI Pondo, etc. (0 if none)</div>
-        </div>
-        <div class="field-right">
-          <span class="field-pfx">₱</span>
-          <input class="field-input" id="debt" type="number" value="0" min="0" oninput="calc()">
-        </div>
-      </div>
-    </div>
-
-    <!-- EBITDA BANNER -->
-    <div class="pl-banner ebitda">
-      <div>
-        <div class="pl-banner-lbl">= EBITDA</div>
-        <div style="font-size:10px;color:#15803D;margin-top:1px">Gross Profit minus all operating costs and marketing</div>
-      </div>
-      <div style="display:flex;align-items:center">
-        <div class="pl-banner-val" id="c-ebitda">₱0</div>
-        <div class="pl-banner-margin" id="c-ebitda-pct">0%</div>
-      </div>
-    </div>
-
-    <!-- NET INCOME BANNER -->
-    <div class="pl-banner net">
-      <div>
-        <div class="pl-banner-lbl">= Net Operating Income</div>
-        <div style="font-size:10px;color:rgba(245,240,232,.4);margin-top:1px">After debt service — what you actually keep</div>
-      </div>
-      <div class="pl-banner-val" id="c-net" style="font-size:20px">₱0</div>
-    </div>
-
-  </div>
-
-  <!-- RIGHT: RESULTS -->
-  <div>
-
-    <!-- Big 4 Metrics -->
     <div class="card">
-      <div class="card-title" id="results-title">Monthly Financial Summary</div>
-      <div class="metric-grid">
-        <div class="mc">
-          <div class="mc-lbl">Gross Revenue</div>
-          <div class="mc-val" id="m-rev">₱0</div>
-          <div class="mc-sub" id="m-rev-sub">0 orders</div>
+      <div class="card-h">
+        <div class="seg" id="view-seg">
+          <button data-view="month" class="on">Month</button>
+          <button data-view="quarter">Quarter</button>
+          <button data-view="year">Full year</button>
         </div>
-        <div class="mc">
-          <div class="mc-lbl">Gross Profit</div>
-          <div class="mc-val hi" id="m-gp">₱0</div>
-          <div class="mc-sub" id="m-gp-pct">0% gross margin</div>
-        </div>
-        <div class="mc">
-          <div class="mc-lbl" id="ebitda-lbl">EBITDA</div>
-          <div class="mc-val gn" id="m-ebitda">₱0</div>
-          <div class="mc-sub" id="m-ebitda-pct">0% EBITDA margin</div>
-        </div>
-        <div class="mc">
-          <div class="mc-lbl">Net Operating Income</div>
-          <div class="mc-val" id="m-net">₱0</div>
-          <div class="mc-sub" id="m-net-pct">0% net margin</div>
-        </div>
+        <div class="card-s" id="coverage"></div>
+      </div>
+      <div class="metrics">
+        <div class="m"><div class="m-l">Gross sales</div><div class="m-v" id="m-rev">—</div><div class="m-s" id="m-rev-s"></div></div>
+        <div class="m"><div class="m-l">Gross profit</div><div class="m-v" id="m-gp">—</div><div class="m-s" id="m-gp-s"></div></div>
+        <div class="m"><div class="m-l">EBITDA</div><div class="m-v" id="m-ebitda">—</div><div class="m-s" id="m-ebitda-s"></div></div>
+        <div class="m"><div class="m-l">Net income</div><div class="m-v" id="m-net">—</div><div class="m-s" id="m-net-s"></div></div>
+      </div>
+      <div class="warn" id="view-warn"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-h">
+        <div class="card-t">Profit and loss statement</div>
+        <div class="card-s">Quarter and year add up entered months only</div>
+      </div>
+      <div class="scroll"><table class="pl"><thead id="pl-head"></thead><tbody id="pl-body"></tbody></table></div>
+    </div>
+
+    <div class="card">
+      <div class="card-h">
+        <div class="card-t">Month by month</div>
+        <div class="card-s">Click a month to edit it</div>
+      </div>
+      <div class="scroll">
+        <table class="mt">
+          <thead><tr><th>Month</th><th>Sales</th><th>COGS</th><th>Operating</th><th>Marketing</th><th>EBITDA</th><th>Net income</th><th>Net margin</th></tr></thead>
+          <tbody id="mt-body"></tbody>
+          <tfoot id="mt-foot"></tfoot>
+        </table>
       </div>
     </div>
 
-    <!-- All-periods table -->
     <div class="card">
-      <div class="card-title">Full P&amp;L — Monthly · Quarterly · Yearly</div>
-      <table class="sum-table">
-        <thead>
-          <tr>
-            <th style="text-align:left">Line Item</th>
-            <th>Monthly</th>
-            <th>Quarterly</th>
-            <th>Yearly</th>
-          </tr>
-        </thead>
-        <tbody id="sum-tbody"></tbody>
-      </table>
-    </div>
-
-    <!-- Monthly Tracker -->
-    <div class="card">
-      <div class="card-title">Monthly Revenue — Enter your actual sales per month</div>
-      <p style="font-size:11px;color:var(--muted);margin-bottom:12px">Fill in the months you have data for. Blank months are projected from your monthly average. The left column shows your average month; Q1–Q4 and Annual use your actual figures.</p>
-      <div class="month-grid">
-
-        <div class="month-cell"><div class="month-lbl">January</div><div class="month-row-inner"><span class="mpfx">₱</span><input class="month-input" id="m01" type="number" min="0" placeholder="—" oninput="calc()"></div></div>
-        <div class="month-cell"><div class="month-lbl">February</div><div class="month-row-inner"><span class="mpfx">₱</span><input class="month-input" id="m02" type="number" min="0" placeholder="—" oninput="calc()"></div></div>
-        <div class="month-cell"><div class="month-lbl">March</div><div class="month-row-inner"><span class="mpfx">₱</span><input class="month-input" id="m03" type="number" min="0" placeholder="—" oninput="calc()"></div></div>
-        <div class="qcol"><div class="qlbl">Q1 Revenue</div><div class="qrev" id="qt1r">₱0</div><div class="qnet" id="qt1n">Net ₱0</div><div class="qsub" id="qt1s"></div></div>
-
-        <div class="month-sep"></div>
-
-        <div class="month-cell"><div class="month-lbl">April</div><div class="month-row-inner"><span class="mpfx">₱</span><input class="month-input" id="m04" type="number" min="0" placeholder="—" oninput="calc()"></div></div>
-        <div class="month-cell"><div class="month-lbl">May</div><div class="month-row-inner"><span class="mpfx">₱</span><input class="month-input" id="m05" type="number" min="0" placeholder="—" oninput="calc()"></div></div>
-        <div class="month-cell"><div class="month-lbl">June</div><div class="month-row-inner"><span class="mpfx">₱</span><input class="month-input" id="m06" type="number" min="0" placeholder="—" oninput="calc()"></div></div>
-        <div class="qcol"><div class="qlbl">Q2 Revenue</div><div class="qrev" id="qt2r">₱0</div><div class="qnet" id="qt2n">Net ₱0</div><div class="qsub" id="qt2s"></div></div>
-
-        <div class="month-sep"></div>
-
-        <div class="month-cell"><div class="month-lbl">July</div><div class="month-row-inner"><span class="mpfx">₱</span><input class="month-input" id="m07" type="number" min="0" placeholder="—" oninput="calc()"></div></div>
-        <div class="month-cell"><div class="month-lbl">August</div><div class="month-row-inner"><span class="mpfx">₱</span><input class="month-input" id="m08" type="number" min="0" placeholder="—" oninput="calc()"></div></div>
-        <div class="month-cell"><div class="month-lbl">September</div><div class="month-row-inner"><span class="mpfx">₱</span><input class="month-input" id="m09" type="number" min="0" placeholder="—" oninput="calc()"></div></div>
-        <div class="qcol"><div class="qlbl">Q3 Revenue</div><div class="qrev" id="qt3r">₱0</div><div class="qnet" id="qt3n">Net ₱0</div><div class="qsub" id="qt3s"></div></div>
-
-        <div class="month-sep"></div>
-
-        <div class="month-cell"><div class="month-lbl">October</div><div class="month-row-inner"><span class="mpfx">₱</span><input class="month-input" id="m10" type="number" min="0" placeholder="—" oninput="calc()"></div></div>
-        <div class="month-cell"><div class="month-lbl">November</div><div class="month-row-inner"><span class="mpfx">₱</span><input class="month-input" id="m11" type="number" min="0" placeholder="—" oninput="calc()"></div></div>
-        <div class="month-cell"><div class="month-lbl">December</div><div class="month-row-inner"><span class="mpfx">₱</span><input class="month-input" id="m12" type="number" min="0" placeholder="—" oninput="calc()"></div></div>
-        <div class="qcol"><div class="qlbl">Q4 Revenue</div><div class="qrev" id="qt4r">₱0</div><div class="qnet" id="qt4n">Net ₱0</div><div class="qsub" id="qt4s"></div></div>
-
-        <div class="ann-row">
-          <div><div class="ann-lbl">Annual Revenue</div><div class="ann-sub" id="ann-cnt"></div></div>
-          <div class="ann-block"><div class="ann-val" id="ann-rev">₱0</div><div class="ann-sub" id="ann-net"></div></div>
-        </div>
-
+      <div class="card-h">
+        <div class="card-t">Decision checks</div>
+        <div class="card-s">Check before you commit money</div>
       </div>
+      <div class="settings" id="settings"></div>
+      <div class="conf nt" id="conf"></div>
+      <div class="dec" id="dec"></div>
     </div>
 
-    <!-- Decision Dashboard -->
     <div class="card">
-      <div class="card-title">Business Decision Dashboard — Check before you act</div>
-      <div class="dec-grid">
-
-        <div class="dc nt" id="dc-mkt">
-          <div class="dc-icon">📣</div>
-          <div class="dc-lbl">Marketing Spend</div>
-          <div class="dc-val" id="d-mkt-val">0%</div>
-          <div class="dc-note" id="d-mkt-note">of revenue · target 5–10%</div>
-          <div class="gauge-wrap">
-            <div class="gauge-track"><div class="gauge-fill" id="g-mkt" style="width:0;background:var(--muted)"></div></div>
-            <div class="gauge-marks"><span>0%</span><span>5%</span><span>10%</span><span>15%</span></div>
-          </div>
-        </div>
-
-        <div class="dc nt" id="dc-loan">
-          <div class="dc-icon">🏦</div>
-          <div class="dc-lbl">Max Loanable Amount</div>
-          <div class="dc-val" id="d-loan-val">₱0</div>
-          <div class="dc-note" id="d-loan-note">DSCR 1.25× · 3yr · 12% p.a.</div>
-        </div>
-
-        <div class="dc nt" id="dc-scale">
-          <div class="dc-icon">📈</div>
-          <div class="dc-lbl">Scale Readiness</div>
-          <div class="dc-val" id="d-scale-val">—</div>
-          <div class="dc-note" id="d-scale-note">Based on EBITDA margin</div>
-        </div>
-
-        <div class="dc nt" id="dc-camp">
-          <div class="dc-icon">🎯</div>
-          <div class="dc-lbl">Spare Campaign Budget</div>
-          <div class="dc-val" id="d-camp-val">₱0</div>
-          <div class="dc-note" id="d-camp-note">After 20% cash reserve</div>
-        </div>
-
-        <div class="dc nt" id="dc-hire">
-          <div class="dc-icon">👷</div>
-          <div class="dc-lbl">Hire One More Staff?</div>
-          <div class="dc-val" id="d-hire-val">—</div>
-          <div class="dc-note" id="d-hire-note">+₱16,770/mo · PH min. wage</div>
-        </div>
-
-        <div class="dc nt" id="dc-promo">
-          <div class="dc-icon">🏷️</div>
-          <div class="dc-lbl">Run a 10% Discount?</div>
-          <div class="dc-val" id="d-promo-val">—</div>
-          <div class="dc-note" id="d-promo-note">Impact on net income</div>
-        </div>
-
-        <div class="dc nt" id="dc-deliv">
-          <div class="dc-icon">🛵</div>
-          <div class="dc-lbl">Join Grab / FoodPanda?</div>
-          <div class="dc-val" id="d-deliv-val">—</div>
-          <div class="dc-note" id="d-deliv-note">At 28% platform commission</div>
-        </div>
-
-        <div class="dc nt" id="dc-bulk">
-          <div class="dc-icon">📦</div>
-          <div class="dc-lbl">Bulk Buy Inventory (3 mo)?</div>
-          <div class="dc-val" id="d-bulk-val">—</div>
-          <div class="dc-note" id="d-bulk-note">Cash flow safety check</div>
-        </div>
-
-      </div>
+      <div class="card-h"><div class="card-t">What the data shows</div></div>
+      <ul class="ins" id="ins"></ul>
     </div>
 
-    <!-- Insights -->
-    <div class="card">
-      <div class="card-title">Actionable Insights</div>
-      <div id="insights"><div class="insight"><span class="i-icon">👆</span><span>Fill in your figures on the left to see tailored insights for your business.</span></div></div>
-    </div>
-
-  </div>
-</div>
+  </section>
+</main>
 
 <script>
-let period = 'monthly';
-const lbl = {monthly:'Monthly', quarterly:'Quarterly', yearly:'Annual'};
+const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const BASE=['rev','inv','pack','labor','rent','util','other','ads','promo','collab','debt'];
+const SECTIONS=[
+  {key:'rev',title:'Sales',fields:[['rev','Gross sales','All menu items combined. Use your POS, GCash and cash records.','Enter sales']]},
+  {key:'cogs',title:'Cost of goods sold',sub:'Total COGS',after:'gp',fields:[
+    ['inv','Inventory and raw ingredients','Chicken, sauces, rice, drinks stock bought this month'],
+    ['pack','Packaging and consumables','Boxes, cups, trays, napkins, takeout bags']]},
+  {key:'opex',title:'Operating costs',sub:'Total operating costs',fields:[
+    ['labor','Labor and wages','Salaries, daily wages and benefits for all staff'],
+    ['rent','Rent or stall fee','Monthly rent for the space'],
+    ['util','Utilities','Electricity, LPG and water'],
+    ['other','Other operating costs','Permits, repairs, transport, miscellaneous']]},
+  {key:'mkt',title:'Marketing',sub:'Total marketing',after:'ebitda',fields:[
+    ['ads','Paid ads and boosted posts','Facebook, Instagram, TikTok, sponsored app listings'],
+    ['promo','Promos and giveaways','Cost of freebies and promos not already deducted from sales'],
+    ['collab','Collabs and other marketing','Influencers, flyers, tarpaulins, events']]},
+  {key:'debt',title:'Loan payments',after:'net',fields:[
+    ['debt','Loan amortization paid','Total loan payments made this month']]},
+];
+const BANDS={gp:['Gross profit','Sales minus cost of goods sold'],ebitda:['EBITDA','Gross profit minus operating costs and marketing'],net:['Net income','EBITDA minus loan payments']};
+const SETTINGS=[
+  ['hire','New hire monthly cost','₱','','e.g. 18,000','Salary plus benefits of the person you plan to hire'],
+  ['disc','Planned discount','','%','e.g. 10','Discount off menu prices for the promo you are considering'],
+  ['comm','Delivery app commission','','%','e.g. 30','Rate from your Grab or foodpanda contract'],
+  ['reserve','Cash reserve to keep','','% of EBITDA','e.g. 20','Share of profit you set aside before new spending'],
+  ['rate','Loan interest rate','','% per year','e.g. 12','Annual rate quoted by the lender'],
+  ['term','Loan term','','years','e.g. 3','Repayment period offered'],
+  ['cash','Cash on hand today','₱','','e.g. 80,000','Cash and bank balance available to the business'],
+  ['bulk','Months of stock to buy','','months','e.g. 3','For a bulk inventory purchase'],
+];
+const ROWS=[
+  ['Gross sales','rev','total'],
+  ['Less: Cost of goods sold','cogs','parent'],
+  ['Inventory and ingredients','inv','child'],
+  ['Packaging and consumables','pack','child'],
+  ['Gross profit','gp','gp'],
+  ['Less: Operating costs','opex','parent'],
+  ['Labor and wages','labor','child'],
+  ['Rent or stall fee','rent','child'],
+  ['Utilities','util','child'],
+  ['Other operating costs','other','child'],
+  ['Less: Marketing','mkt','parent'],
+  ['Paid ads','ads','child'],
+  ['Promos and giveaways','promo','child'],
+  ['Collabs and other','collab','child'],
+  ['EBITDA','ebitda','eb'],
+  ['Less: Loan payments','debt','parent'],
+  ['Net income','net','net'],
+];
+const COST=new Set(['cogs','inv','pack','opex','labor','rent','util','other','mkt','ads','promo','collab','debt']);
+const STATUS={gd:'Go',wn:'Caution',bd:'Hold',nt:'Needs input'};
 
-function setPeriod(p, btn) {
-  period = p;
-  document.querySelectorAll('.pbtn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  calc();
+const KEY='umami-profit-calc-v2';
+function load(){try{const s=localStorage.getItem(KEY);return s?JSON.parse(s):null}catch(e){return null}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
+let state=load()||{months:{},settings:{}};
+state.months=state.months||{};state.settings=state.settings||{};
+
+const $=id=>document.getElementById(id);
+const num=v=>(v===undefined||v===null||v==='')?0:(parseFloat(v)||0);
+const hasRev=i=>{const d=state.months[i];return !!d&&d.rev!==undefined&&d.rev!==''};
+const hasAny=i=>{const d=state.months[i];return !!d&&Object.keys(d).length>0};
+const peso=n=>{const r=Math.round(n);return (r<0?'−':'')+'₱'+Math.abs(r).toLocaleString('en-PH')};
+const pctf=n=>(n<0?'−':'')+Math.abs(n).toFixed(1)+'%';
+const ratio=(a,b)=>b?pctf(a/b*100):'—';
+const clean=v=>{v=String(v).replace(/[^0-9.]/g,'');const i=v.indexOf('.');return i<0?v:v.slice(0,i+1)+v.slice(i+1).replace(/\./g,'')};
+const grp=raw=>{if(raw===undefined||raw==='')return '';const [a,b]=String(raw).split('.');return (a===''?'0':Number(a).toLocaleString('en-PH'))+(b!==undefined?'.'+b:'')};
+const names=idx=>idx.map(i=>MONTHS[i].slice(0,3)).join(', ');
+
+function derive(r){r.cogs=r.inv+r.pack;r.opex=r.labor+r.rent+r.util+r.other;r.mkt=r.ads+r.promo+r.collab;r.gp=r.rev-r.cogs;r.ebitda=r.gp-r.opex-r.mkt;r.net=r.ebitda-r.debt;return r}
+function monthPL(i){const d=state.months[i]||{};const r={};BASE.forEach(k=>r[k]=num(d[k]));return derive(r)}
+function sumPL(idx){const r={};BASE.forEach(k=>r[k]=0);idx.forEach(i=>{const d=state.months[i]||{};BASE.forEach(k=>r[k]+=num(d[k]))});return derive(r)}
+function avgPL(idx){const s=sumPL(idx);const r={};BASE.forEach(k=>r[k]=s[k]/idx.length);return derive(r)}
+const entered=()=>[...Array(12).keys()].filter(hasRev);
+
+function initialMonth(){const e=[...Array(12).keys()].filter(hasAny);return e.length?e[e.length-1]:new Date().getMonth()}
+let sel=initialMonth();
+let view='month';
+
+/* ---------- Form ---------- */
+function renderForm(){
+  let h='';
+  SECTIONS.forEach(s=>{
+    h+=`<div class="sec"><div class="sec-head">${s.title}</div>`;
+    s.fields.forEach(([id,name,hint,ph])=>{
+      h+=`<label class="row"><span class="row-txt"><span class="row-name">${name}</span><span class="row-hint">${hint}</span></span>`+
+         `<span class="money"><span class="cur">₱</span><input data-f="${id}" type="text" inputmode="decimal" autocomplete="off" placeholder="${ph||'0'}" aria-label="${name}"></span></label>`;
+    });
+    if(s.sub) h+=`<div class="sub"><span>${s.sub}</span><span class="sub-r"><span class="sub-pct" id="subp-${s.key}"></span><span class="sub-val" id="sub-${s.key}">₱0</span></span></div>`;
+    h+='</div>';
+    if(s.after){const [l,hint]=BANDS[s.after];h+=`<div class="band band-${s.after}"><div><div class="band-lbl">${l}</div><div class="band-hint">${hint}</div></div><div><div class="band-val" id="band-${s.after}">—</div><div class="band-pct" id="bandp-${s.after}"></div></div></div>`}
+  });
+  $('form').innerHTML=h;
+  $('form').querySelectorAll('input[data-f]').forEach(inp=>{
+    const f=inp.dataset.f;
+    inp.addEventListener('focus',()=>{inp.value=(state.months[sel]||{})[f]??''});
+    inp.addEventListener('blur',()=>{inp.value=grp((state.months[sel]||{})[f])});
+    inp.addEventListener('input',()=>{const c=clean(inp.value);if(c!==inp.value)inp.value=c;setField(sel,f,c);update()});
+  });
+}
+function fillForm(){
+  const d=state.months[sel]||{};
+  $('form').querySelectorAll('input[data-f]').forEach(inp=>{inp.value=document.activeElement===inp?(d[inp.dataset.f]??''):grp(d[inp.dataset.f])});
+}
+function setField(i,f,v){
+  const d=state.months[i]||(state.months[i]={});
+  if(v==='')delete d[f];else d[f]=v;
+  if(!Object.keys(d).length)delete state.months[i];
+  save();
+}
+function renderFormTotals(){
+  const p=monthPL(sel),ok=hasRev(sel);
+  $('form-month').textContent=MONTHS[sel];
+  const st=$('form-status');
+  if(ok){st.className='status full';st.textContent='Included in totals'}
+  else if(hasAny(sel)){st.className='status part';st.textContent='Sales missing, not included in totals'}
+  else{st.className='status';st.textContent='No data yet'}
+  [['cogs','cogs'],['opex','opex'],['mkt','mkt']].forEach(([k])=>{
+    $('sub-'+k).textContent=peso(p[k]);
+    $('subp-'+k).textContent=ok&&p.rev?pctf(p[k]/p.rev*100)+' of sales':'';
+  });
+  ['gp','ebitda','net'].forEach(k=>{
+    const v=$('band-'+k),pp=$('bandp-'+k);
+    if(!ok){v.textContent='—';v.classList.remove('loss');pp.textContent='Enter sales to calculate';return}
+    v.textContent=peso(p[k]);v.classList.toggle('loss',p[k]<0);
+    pp.textContent=p.rev?pctf(p[k]/p.rev*100)+' of sales':'';
+  });
+  $('copy-btn').disabled=prevWithData()<0;
+}
+function prevWithData(){for(let i=sel-1;i>=0;i--)if(hasAny(i))return i;return -1}
+function copyPrev(){
+  const p=prevWithData();if(p<0)return;
+  const cur=state.months[sel]||{};
+  const hasCosts=BASE.some(k=>k!=='rev'&&cur[k]!==undefined);
+  if(hasCosts&&!confirm(`Replace ${MONTHS[sel]}'s costs with ${MONTHS[p]}'s costs? Sales stay as entered.`))return;
+  const src=state.months[p],next={};
+  if(cur.rev!==undefined)next.rev=cur.rev;
+  BASE.forEach(k=>{if(k!=='rev'&&src[k]!==undefined)next[k]=src[k]});
+  if(Object.keys(next).length)state.months[sel]=next;else delete state.months[sel];
+  save();fillForm();update();
+}
+function clearMonth(){
+  if(!hasAny(sel))return;
+  if(!confirm(`Clear all figures for ${MONTHS[sel]}?`))return;
+  delete state.months[sel];save();fillForm();update();
+}
+function clearAll(){
+  if(!confirm('Delete all monthly data and decision settings saved in this browser? This cannot be undone.'))return;
+  state={months:{},settings:{}};save();fillForm();fillSettings();update();
 }
 
-function fmt(n) {
-  const a = Math.abs(Math.round(n));
-  if (a >= 1000000) return '₱' + (a/1000000).toFixed(2) + 'M';
-  if (a >= 1000) return '₱' + a.toLocaleString('en-PH');
-  return '₱' + a;
+/* ---------- Month tabs ---------- */
+function renderTabs(){
+  $('tabs').innerHTML=MONTHS.map((m,i)=>{
+    const st=hasRev(i)?'full':(hasAny(i)?'part':'');
+    const t=st==='full'?'entered':st==='part'?'sales missing':'empty';
+    return `<button class="tab ${st} ${i===sel?'on':''} ${i%3===0&&i?'qs':''}" data-i="${i}" title="${m}: ${t}" aria-pressed="${i===sel}">${m.slice(0,3)}<i></i></button>`;
+  }).join('');
 }
-function sgn(v) { return v < 0 ? '−' : ''; }
-function pct(a,b) { return b ? a/b*100 : 0; }
-function g(id) { return parseFloat(document.getElementById(id).value) || 0; }
-function set(id, v) { const el = document.getElementById(id); if (el) el.textContent = v; }
-function dc(id, cls) { const el = document.getElementById(id); el.className = 'dc ' + cls; }
+function selectMonth(i){sel=i;fillForm();update()}
+$('tabs').addEventListener('click',e=>{const b=e.target.closest('.tab');if(b)selectMonth(+b.dataset.i)});
 
-function qPL(rev, months, cogsRatio, mOpEx, mkt, debt) {
-  const cogs    = rev * cogsRatio;
-  const gp      = rev - cogs;
-  const opex    = mOpEx * months;
-  const mktT    = mkt * months;
-  const ebitda  = gp - opex - mktT;
-  const net     = ebitda - debt * months;
-  return { rev, cogs, gp, opex, mktT, ebitda, net };
-}
-
-function calc() {
-  // ── REVENUE: derived from monthly tracker (average of filled months) ──
-  const rawMonths = Array.from({length:12}, (_,i) => {
-    const id = 'm' + String(i+1).padStart(2,'0');
-    const v = parseFloat(document.getElementById(id).value);
-    return (!isNaN(v) && v > 0) ? v : null;
-  });
-  const filledVals = rawMonths.filter(v => v !== null);
-  const mRev = filledVals.length > 0 ? filledVals.reduce((a,b)=>a+b,0) / filledVals.length : 0;
-
-  // ── COST / EXPENSE INPUTS ──
-  const inv      = g('inv');
-  const pack     = g('pack');
-  const labor    = g('labor');
-  const rent     = g('rent');
-  const util     = g('util');
-  const other    = g('other');
-  const mktAds   = g('mkt-ads');
-  const mktPromo = g('mkt-promo');
-  const mktOther = g('mkt-other');
-  const debt     = g('debt');
-
-  const mCOGS   = inv + pack;
-  const mkt     = mktAds + mktPromo + mktOther;
-  const mGP     = mRev - mCOGS;
-  const mOpEx   = labor + rent + util + other;
-  const mEBITDA = mGP - mOpEx - mkt;
-  const mNet    = mEBITDA - debt;
-  const gpM     = pct(mGP, mRev);
-  const eM      = pct(mEBITDA, mRev);
-  const mktPct  = pct(mkt, mRev);
-  const cogsRatio = mRev > 0 ? mCOGS / mRev : 0;
-
-  // ── MONTHLY TRACKER — style actual cells, fill blanks with mRev ──
-  const months = rawMonths.map((v, i) => {
-    const el = document.getElementById('m' + String(i+1).padStart(2,'0'));
-    el.classList.toggle('actual', v !== null);
-    return v !== null ? v : mRev;
-  });
-
-  // Quarter sums and actuals count
-  const qRevs = [0,1,2,3].map(q => months.slice(q*3,q*3+3).reduce((a,b)=>a+b,0));
-  const annRev = months.reduce((a,b)=>a+b,0);
-  const qAct  = [0,1,2,3].map(q => [0,1,2].filter(i => {
-    const id = 'm' + String(q*3+i+1).padStart(2,'0');
-    const v = parseFloat(document.getElementById(id).value);
-    return !isNaN(v) && v > 0;
-  }).length);
-  const totalAct = filledVals.length;
-
-  // Quarter P&L
-  const qPLs = [0,1,2,3].map(qi => qPL(qRevs[qi], 3, cogsRatio, mOpEx, mkt, debt));
-  const annPL = qPL(annRev, 12, cogsRatio, mOpEx, mkt, debt);
-
-  // Update tracker UI
-  ['1','2','3','4'].forEach((q,qi) => {
-    set('qt'+q+'r', fmt(qRevs[qi]));
-    set('qt'+q+'n', 'Net ' + sgn(qPLs[qi].net) + fmt(Math.abs(qPLs[qi].net)));
-    set('qt'+q+'s', qAct[qi]+' actual · '+(3-qAct[qi])+' proj.');
-    document.getElementById('qt'+q+'n').style.color = qPLs[qi].net >= 0 ? 'var(--green)' : 'var(--red)';
-  });
-  set('ann-rev', fmt(annRev));
-  set('ann-net', 'Net ' + sgn(annPL.net) + fmt(Math.abs(annPL.net)));
-  set('ann-cnt', totalAct + ' months with actual data · ' + (12-totalAct) + ' projected');
-
-  // ── PERIOD SELECTION ──
-  // Pick display P&L based on period toggle
-  let dRev, dGP, dEBITDA, dNet, dMul, dLabel;
-  if (period === 'monthly') {
-    dRev=mRev; dGP=mGP; dEBITDA=mEBITDA; dNet=mNet; dMul=1; dLabel='Monthly';
-  } else if (period === 'quarterly') {
-    // Use Q1 from tracker (or project if no data)
-    dRev=qRevs[0]; dGP=qPLs[0].gp; dEBITDA=qPLs[0].ebitda; dNet=qPLs[0].net; dMul=3; dLabel='Q1 Total';
-  } else {
-    dRev=annRev; dGP=annPL.gp; dEBITDA=annPL.ebitda; dNet=annPL.net; dMul=12; dLabel='Annual Total';
-  }
-
-  // ── LEFT SIDE INLINE CALCS ──
-  set('c-rev-avg',   fmt(mRev));
-  set('c-cogs',      fmt(mCOGS));
-  set('c-cogs-pct',  pct(mCOGS,mRev).toFixed(1) + '% of rev');
-  set('c-gp',        sgn(mGP) + fmt(Math.abs(mGP)));
-  set('c-gp-pct',    gpM.toFixed(1) + '%');
-  set('c-opex',      fmt(mOpEx));
-  set('c-mkt',       fmt(mkt));
-  set('c-mkt-pct',   pct(mkt,mRev).toFixed(1) + '% of rev');
-  set('c-ebitda',    sgn(mEBITDA) + fmt(Math.abs(mEBITDA)));
-  set('c-ebitda-pct',eM.toFixed(1) + '%');
-  set('c-net',       sgn(mNet) + fmt(Math.abs(mNet)));
-
-  // ── BIG 4 ──
-  set('results-title', dLabel + ' Financial Summary');
-  set('ebitda-lbl',    dLabel + ' EBITDA');
-  set('m-rev',  fmt(dRev));
-  set('m-rev-sub', period==='monthly'?'this month':(period==='quarterly'?'Q1 Jan–Mar':'all 12 months'));
-  set('m-gp',   fmt(dGP));
-  set('m-gp-pct', pct(dGP,dRev).toFixed(1) + '% gross margin');
-  const eEl = document.getElementById('m-ebitda');
-  eEl.textContent = sgn(dEBITDA) + fmt(Math.abs(dEBITDA));
-  eEl.className = 'mc-val ' + (dEBITDA >= 0 ? 'gn' : 'rd');
-  set('m-ebitda-pct', pct(dEBITDA,dRev).toFixed(1) + '% EBITDA margin');
-  const nEl = document.getElementById('m-net');
-  nEl.textContent = sgn(dNet) + fmt(Math.abs(dNet));
-  nEl.className = 'mc-val ' + (dNet >= 0 ? '' : 'rd');
-  set('m-net-pct', pct(dNet,dRev).toFixed(1) + '% net margin');
-
-  // ── P&L TABLE — Monthly / Q1 Actual / Annual Actual ──
-  const q1 = qPLs[0], ann = annPL;
-  // td styles (text color / weight per row type)
-  const sc = {
-    b:    'font-weight:700',
-    cg:   'color:var(--red);font-weight:700',
-    sub:  'color:var(--red);padding-left:20px;font-size:11px;border-left:2px solid rgba(220,38,38,.2)',
-    gp:   'font-weight:700;color:#1D4ED8',
-    op:   'color:var(--yellow);font-weight:700',
-    sub2: 'color:var(--yellow);padding-left:20px;font-size:11px;border-left:2px solid rgba(180,83,9,.2)',
-    eb:   'font-weight:700;color:var(--green)',
-    nt:   'font-weight:700',
+/* ---------- Results ---------- */
+function views(){
+  const q=Math.floor(sel/3),qi=[q*3,q*3+1,q*3+2];
+  return{
+    month:{label:MONTHS[sel],idx:hasRev(sel)?[sel]:[],of:1},
+    quarter:{label:`Q${q+1} (${MONTHS[q*3].slice(0,3)}–${MONTHS[q*3+2].slice(0,3)})`,idx:qi.filter(hasRev),of:3},
+    year:{label:'Full year',idx:entered(),of:12},
   };
-  // tr background per row type
-  const bg = {
-    b:    '',
-    cg:   'background:rgba(220,38,38,.05);border-top:2px solid var(--border)',
-    sub:  'background:#FEFAFA',
-    gp:   'background:#EFF6FF;border-top:2px solid #BFDBFE;border-bottom:2px solid #BFDBFE',
-    op:   'background:rgba(180,83,9,.05);border-top:2px solid var(--border)',
-    sub2: 'background:#FDFCF8',
-    eb:   'background:var(--green-bg);border-top:2px solid #86EFAC;border-bottom:2px solid #86EFAC',
-    nt:   'background:var(--charcoal)',
-  };
-  const nt_td = 'color:var(--cream);font-weight:700';
-
-  function tRow(label, mo, q1v, annv, s) {
-    const p0=mo<0?'−':'', p1=q1v<0?'−':'', p2=annv<0?'−':'';
-    const tdS = s==='nt' ? nt_td : (sc[s]||'');
-    return `<tr style="${bg[s]||''}">
-      <td style="${tdS}">${label}</td>
-      <td style="${tdS};text-align:right">${p0}${fmt(Math.abs(mo))}</td>
-      <td style="${tdS};text-align:right">${p1}${fmt(Math.abs(q1v))}</td>
-      <td style="${tdS};text-align:right">${p2}${fmt(Math.abs(annv))}</td></tr>`;
+}
+function setMetric(id,val,sub,isMoney=true){
+  const el=$(id);
+  if(val===null){el.textContent='—';el.className='m-v na'}
+  else{el.textContent=isMoney?peso(val):val;el.className='m-v'+(val<0?' loss':'')}
+  $(id+'-s').textContent=sub;
+}
+function renderSummary(V){
+  const v=V[view],n=v.idx.length;
+  $('coverage').textContent=view==='month'?`${v.label} · ${n?'sales entered':'no sales entered'}`:`${v.label} · ${n} of ${v.of} months entered`;
+  if(!n){
+    ['m-rev','m-gp','m-ebitda','m-net'].forEach(id=>setMetric(id,null,'No data'));
+    $('view-warn').textContent=`No sales entered for ${v.label}. Nothing is estimated.`;
+    return;
   }
+  const s=sumPL(v.idx);
+  setMetric('m-rev',s.rev,view==='month'?'Entered sales':`Total of ${n} month${n>1?'s':''}`);
+  setMetric('m-gp',s.gp,ratio(s.gp,s.rev)+' gross margin');
+  setMetric('m-ebitda',s.ebitda,ratio(s.ebitda,s.rev)+' EBITDA margin');
+  setMetric('m-net',s.net,ratio(s.net,s.rev)+' net margin');
+  $('view-warn').textContent=(view!=='month'&&n<v.of)?`These totals include ${names(v.idx)} only. ${v.of-n} month${v.of-n>1?'s have':' has'} no sales entered and ${v.of-n>1?'are':'is'} not estimated.`:'';
+}
+function renderPL(V){
+  const cols=[V.month,V.quarter,V.year].map(v=>({v,s:v.idx.length?sumPL(v.idx):null}));
+  $('pl-head').innerHTML=`<tr><th>Line item</th>${cols.map(({v},i)=>`<th>${i===0?v.label:i===1?v.label.split(' ')[0]:v.label}<small>${i===0?(v.idx.length?'entered':'no data'):`${v.idx.length} of ${v.of} months`}</small></th>`).join('')}</tr>`;
+  $('pl-body').innerHTML=ROWS.map(([label,k,cls])=>`<tr class="${cls}"><td>${label}</td>${cols.map(({s})=>{
+    if(!s)return '<td class="na">—</td>';
+    const isCost=COST.has(k),val=isCost?-s[k]:s[k];
+    return `<td class="${!isCost&&val<0?'loss':''}">${peso(val)}</td>`;
+  }).join('')}</tr>`).join('');
+}
+function renderMonthTable(){
+  $('mt-body').innerHTML=MONTHS.map((m,i)=>{
+    const c=`${i===sel?'sel':''}`;
+    if(!hasRev(i))return `<tr class="none ${c}" data-i="${i}"><td>${m}</td><td colspan="7" style="text-align:left">${hasAny(i)?'Costs entered, sales missing':'Not entered'}</td></tr>`;
+    const p=monthPL(i);
+    return `<tr class="${c}" data-i="${i}"><td>${m}</td><td>${peso(p.rev)}</td><td>${peso(p.cogs)}</td><td>${peso(p.opex)}</td><td>${peso(p.mkt)}</td><td class="${p.ebitda<0?'loss':''}">${peso(p.ebitda)}</td><td class="${p.net<0?'loss':''}">${peso(p.net)}</td><td class="${p.net<0?'loss':''}">${ratio(p.net,p.rev)}</td></tr>`;
+  }).join('');
+  const e=entered();
+  if(!e.length){$('mt-foot').innerHTML='';return}
+  const s=sumPL(e),a=avgPL(e);
+  const r=(lbl,p,cls)=>`<tr class="${cls}"><td>${lbl}</td><td>${peso(p.rev)}</td><td>${peso(p.cogs)}</td><td>${peso(p.opex)}</td><td>${peso(p.mkt)}</td><td class="${p.ebitda<0?'loss':''}">${peso(p.ebitda)}</td><td class="${p.net<0?'loss':''}">${peso(p.net)}</td><td class="${p.net<0?'loss':''}">${ratio(p.net,p.rev)}</td></tr>`;
+  $('mt-foot').innerHTML=r(`Total (${e.length} mo)`,s,'')+(e.length>1?r('Monthly average',a,'avg'):'');
+}
+$('mt-body').addEventListener('click',e=>{const tr=e.target.closest('tr[data-i]');if(tr){selectMonth(+tr.dataset.i);window.scrollTo({top:0,behavior:'smooth'})}});
+$('view-seg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;view=b.dataset.view;document.querySelectorAll('#view-seg button').forEach(x=>x.classList.toggle('on',x===b));update()});
 
-  // Update table headers to reflect tracker
-  document.getElementById('sum-tbody').previousElementSibling.innerHTML =
-    `<tr><th style="text-align:left">Line Item</th><th>Monthly</th><th>Q1 Actual</th><th>Annual</th></tr>`;
+/* ---------- Decision settings ---------- */
+function renderSettings(){
+  $('settings').innerHTML=SETTINGS.map(([id,label,pre,unit,ph,hint])=>
+    `<label class="set"><span class="set-l">${label}</span><span class="set-h">${hint}</span>`+
+    `<span class="field">${pre?`<span class="unit pre">${pre}</span>`:''}<input data-s="${id}" type="text" inputmode="decimal" autocomplete="off" placeholder="${ph}" aria-label="${label}">${unit?`<span class="unit">${unit}</span>`:''}</span></label>`).join('');
+  $('settings').querySelectorAll('input[data-s]').forEach(inp=>{
+    const k=inp.dataset.s;
+    inp.addEventListener('focus',()=>{inp.value=state.settings[k]??''});
+    inp.addEventListener('blur',()=>{inp.value=grp(state.settings[k])});
+    inp.addEventListener('input',()=>{const c=clean(inp.value);if(c!==inp.value)inp.value=c;if(c==='')delete state.settings[k];else state.settings[k]=c;save();update()});
+  });
+}
+function fillSettings(){$('settings').querySelectorAll('input[data-s]').forEach(inp=>{inp.value=grp(state.settings[inp.dataset.s])})}
+const S=k=>{const v=state.settings[k];return(v===undefined||v==='')?null:parseFloat(v)};
 
-  document.getElementById('sum-tbody').innerHTML = [
-    tRow('Gross Revenue',             mRev,     q1.rev,         ann.rev,         'b'),
-    tRow('( − ) COGS',               -mCOGS,  -q1.cogs,       -ann.cogs,        'cg'),
-    tRow('↳ Inventory / Ingredients',-inv,     -inv*3,         -inv*12,          'sub'),
-    tRow('↳ Packaging & Consumables',-pack,    -pack*3,        -pack*12,         'sub'),
-    tRow('Gross Profit',              mGP,      q1.gp,          ann.gp,          'gp'),
-    tRow('( − ) Operating Costs',    -mOpEx,  -q1.opex,       -ann.opex,        'op'),
-    tRow('↳ Labor / Wages',          -labor,  -labor*3,       -labor*12,        'sub2'),
-    tRow('↳ Rent / Stall Fee',       -rent,   -rent*3,        -rent*12,         'sub2'),
-    tRow('↳ Utilities',              -util,   -util*3,        -util*12,         'sub2'),
-    ...(other>0?[tRow('↳ Other Costs',-other,-other*3,-other*12,'sub2')]:[]),
-    tRow('( − ) Marketing',          -mkt,    -q1.mktT,       -ann.mktT,        'op'),
-    tRow('↳ Paid Ads',               -mktAds, -mktAds*3,      -mktAds*12,       'sub2'),
-    ...(mktPromo>0?[tRow('↳ Promos & Discounts',-mktPromo,-mktPromo*3,-mktPromo*12,'sub2')]:[]),
-    ...(mktOther>0?[tRow('↳ Collabs & Other',-mktOther,-mktOther*3,-mktOther*12,'sub2')]:[]),
-    tRow('EBITDA',                    mEBITDA,  q1.ebitda,      ann.ebitda,      'eb'),
-    ...(debt>0?[tRow('( − ) Debt Service',-debt,-debt*3,-debt*12,'cg')]:[]),
-    tRow('Net Operating Income',      mNet,     q1.net,         ann.net,         'nt'),
-  ].join('');
+function card(title,st,value,note,basis=''){
+  return `<div class="dc ${st}"><div class="dc-top"><span class="dc-title">${title}</span><span class="pill ${st}">${STATUS[st]}</span></div><div class="dc-val">${value}</div><div class="dc-note">${note}</div><div class="dc-basis">${basis}</div></div>`;
+}
+const DEC_TITLES=['Marketing spend level','Spare budget for new campaigns','How much can we borrow','Ready to expand or scale','Hire one more staff','Run a discount promo','Join a delivery app','Bulk buy inventory'];
 
-  // ── DECISION CARDS ──
-
-  // 1. Marketing Spend
-  const mktCap = Math.min(mktPct, 15);
-  document.getElementById('g-mkt').style.width = (mktCap/15*100) + '%';
-  set('d-mkt-val', mktPct.toFixed(1) + '% of revenue');
-  if (!mRev) {
-    dc('dc-mkt','nt'); set('d-mkt-note','Enter revenue data on the left');
-    document.getElementById('g-mkt').style.background = 'var(--muted)';
-  } else if (mktPct < 3) {
-    dc('dc-mkt','wn'); document.getElementById('g-mkt').style.background='var(--yellow)';
-    set('d-mkt-note','Below 3% — consider increasing spend to drive orders');
-  } else if (mktPct <= 10) {
-    dc('dc-mkt','gd'); document.getElementById('g-mkt').style.background='var(--green)';
-    set('d-mkt-note','Healthy range (5–10%) — keep optimizing your creatives');
-  } else {
-    dc('dc-mkt','wn'); document.getElementById('g-mkt').style.background='var(--red)';
-    set('d-mkt-note','Above 10% — make sure ROI is tracking order growth');
+function renderDecisions(){
+  const e=entered(),n=e.length,conf=$('conf');
+  if(!n){
+    conf.className='conf nt';conf.textContent='Enter sales for at least one month to run these checks.';
+    $('dec').innerHTML=DEC_TITLES.map(t=>card(t,'nt','—','Waiting for monthly data.')).join('');
+    return;
   }
+  const a=avgPL(e);
+  if(n<3){conf.className='conf wn';conf.textContent=`Based on ${n} month${n>1?'s':''} of data (${names(e)}). Use at least 3 months before committing to loans, hiring or expansion.`}
+  else{conf.className='conf gd';conf.textContent=`Based on the monthly average of ${n} entered months (${names(e)}).`}
+  const gm=a.rev?a.gp/a.rev:0,em=a.rev?a.ebitda/a.rev*100:0,out=[];
+  const avgBasis=`Avg of ${n} mo`;
 
-  // 2. Loan capacity
-  const lr = 0.12/12, ln = 36;
-  const maxPay = Math.max(0, mEBITDA)/1.25 - debt;
-  const loanAmt = maxPay > 0 ? maxPay*((1-Math.pow(1+lr,-ln))/lr) : 0;
-  set('d-loan-val', fmt(loanAmt));
-  if (loanAmt <= 0) {
-    dc('dc-loan','bd'); set('d-loan-note','EBITDA too low for new debt — improve margins first');
-  } else if (loanAmt < 50000) {
-    dc('dc-loan','wn'); set('d-loan-note','Modest capacity · Try DTI Pondo sa Pagbabago');
-  } else {
-    dc('dc-loan','gd'); set('d-loan-note','At DSCR 1.25× · 3yr term · 12% p.a.');
-  }
+  // 1 Marketing level
+  const mp=a.rev?a.mkt/a.rev*100:0;
+  out.push(card(DEC_TITLES[0],mp<3?'wn':mp<=10?'gd':'wn',pctf(mp)+' of sales',
+    mp<3?(a.ebitda>0?'Below the 3 to 10% range common for small food businesses. There is room to test more spend.':'Below the 3 to 10% range, but the business is not profitable yet. Fix costs before spending more.')
+    :mp<=10?'Within the 3 to 10% range common for small food businesses.'
+    :'Above 10% of sales. Check that sales rose in the months you spent more.',
+    `${avgBasis}: marketing ${peso(a.mkt)} ÷ sales ${peso(a.rev)}`));
 
-  // 3. Scale readiness
-  if (!mRev) {
-    dc('dc-scale','nt'); set('d-scale-val','—'); set('d-scale-note','Enter data to assess');
-  } else if (eM >= 25) {
-    dc('dc-scale','gd'); set('d-scale-val','Ready to Scale'); set('d-scale-note','Strong margins — explore 2nd location or higher volume');
-  } else if (eM >= 18) {
-    dc('dc-scale','wn'); set('d-scale-val','Borderline'); set('d-scale-note','Workable margins — reduce costs before scaling');
-  } else if (eM >= 8) {
-    dc('dc-scale','bd'); set('d-scale-val','Not Yet'); set('d-scale-note','Too thin to absorb scale costs — optimize first');
-  } else {
-    dc('dc-scale','bd'); set('d-scale-val','Unprofitable'); set('d-scale-note','Revisit pricing, COGS or volume targets');
-  }
+  // 2 Spare campaign budget
+  const res=S('reserve');
+  if(res===null)out.push(card(DEC_TITLES[1],'nt','—','Fill in "Cash reserve to keep" above.'));
+  else{const keep=Math.max(0,a.ebitda)*res/100,spare=a.net-keep;
+    out.push(card(DEC_TITLES[1],spare>0?'gd':'bd',peso(Math.max(0,spare))+' / mo',
+      spare>0?`Available each month after loan payments and keeping ${res}% of EBITDA.`:'Nothing left after loan payments and your reserve.',
+      `${avgBasis}: net income ${peso(a.net)} − reserve ${peso(keep)}`));}
 
-  // 4. Spare campaign budget
-  const reserve = Math.max(0, mEBITDA*0.20);
-  const campBudget = Math.max(0, mEBITDA - debt - reserve);
-  set('d-camp-val', fmt(campBudget));
-  if (campBudget <= 0) {
-    dc('dc-camp','bd'); set('d-camp-note','No surplus · Improve margins before spending more');
-  } else if (campBudget < 2500) {
-    dc('dc-camp','wn'); set('d-camp-note','Small budget · Focus on organic (TikTok, FB Reels)');
-  } else {
-    dc('dc-camp','gd'); set('d-camp-note','Available for boosted posts, promos, collabs');
-  }
+  // 3 Loan capacity
+  const rate=S('rate'),term=S('term'),maxPay=a.ebitda/1.25-a.debt;
+  if(maxPay<=0)out.push(card(DEC_TITLES[2],'bd','₱0','EBITDA cannot cover a new loan payment at 1.25× debt coverage, the usual bank minimum.',`${avgBasis}: EBITDA ${peso(a.ebitda)}, current loan payments ${peso(a.debt)}`));
+  else if(rate===null||term===null)out.push(card(DEC_TITLES[2],'nt',peso(maxPay)+' / mo max payment','Fill in loan interest rate and term above to convert this into a loan amount.',`EBITDA ${peso(a.ebitda)} ÷ 1.25 − current loan payments ${peso(a.debt)}`));
+  else{const r=rate/100/12,k=term*12,prin=r?maxPay*(1-Math.pow(1+r,-k))/r:maxPay*k;
+    out.push(card(DEC_TITLES[2],n<3?'wn':'gd',peso(prin),
+      (n<3?'Only '+n+' month'+(n>1?'s':'')+' of data. Lenders usually review several months of records. ':'')+`Max payment ${peso(maxPay)} / mo over ${term} yr at ${rate}% a year.`,
+      `Keeps EBITDA at 1.25× of all loan payments`));}
 
-  // 5. Hire one more staff?
-  // Philippine min. wage NCR ≈ ₱645/day × 26 days = ₱16,770/month
-  const addStaff = 16770;
-  const newLaborPct = pct(labor + addStaff, mGP);
-  const hireNet = mNet - addStaff;
-  set('d-hire-val', newLaborPct.toFixed(1) + '% of GP');
-  if (!mRev) {
-    dc('dc-hire','nt'); set('d-hire-note','Enter data to assess');
-  } else if (hireNet < 0) {
-    dc('dc-hire','bd'); set('d-hire-note','Adding ₱16,770/mo staff would put you at a loss of ' + fmt(Math.abs(hireNet)));
-  } else if (newLaborPct > 45) {
-    dc('dc-hire','wn'); set('d-hire-note','Labor would be ' + newLaborPct.toFixed(0) + '% of GP — tight. Net income drops to ' + fmt(hireNet));
-  } else {
-    dc('dc-hire','gd'); set('d-hire-note','Affordable. Net income after hire: ' + fmt(hireNet) + '/mo');
-  }
+  // 4 Scale readiness
+  let st4=em>=25?'gd':em>=15?'wn':'bd';
+  let n4=em>=25?'Margins can absorb the setup costs of a new branch or bigger volume.':em>=15?'Positive but thin. Lower costs before expanding.':em>=0?'Too thin to fund expansion.':'The business is losing money.';
+  if(st4==='gd'&&n<3){st4='wn';n4='Margins look strong, but confirm with at least 3 months of data.'}
+  out.push(card(DEC_TITLES[3],st4,pctf(em)+' EBITDA margin',n4,'Guide: 25% and up ready · 15 to 25% borderline · below 15% not yet'));
 
-  // 6. Run a 10% discount?
-  // Same volume, 10% lower price → revenue drops 10%, COGS (absolute) stays same
-  const promoRev   = mRev * 0.90;
-  const promoGP    = promoRev - mCOGS;
-  const promoEBITDA = promoGP - mOpEx - mkt;
-  const promoNet   = promoEBITDA - debt;
-  const profitDrop = mNet - promoNet;
-  set('d-promo-val', sgn(promoNet) + fmt(Math.abs(promoNet)) + '/mo');
-  if (!mRev) {
-    dc('dc-promo','nt'); set('d-promo-note','Enter data to assess');
-  } else if (promoNet < 0) {
-    dc('dc-promo','bd'); set('d-promo-note','This promo puts you at a loss. You need at least ' + fmt(mCOGS + mOpEx + mkt) + ' in revenue to break even.');
-  } else if (pct(promoEBITDA, promoRev) < 10) {
-    dc('dc-promo','wn'); set('d-promo-note','Profit drops by ' + fmt(profitDrop) + '. Very thin margin — only do this with a volume push.');
-  } else {
-    dc('dc-promo','gd'); set('d-promo-note','Still profitable at ' + fmt(promoNet) + '/mo. Promo is feasible if it drives more orders.');
-  }
+  // 5 Hire
+  const hire=S('hire');
+  if(hire===null)out.push(card(DEC_TITLES[4],'nt','—','Fill in "New hire monthly cost" above.'));
+  else{const nn=a.net-hire,lp=a.rev?(a.labor+hire)/a.rev*100:0;
+    out.push(card(DEC_TITLES[4],nn<0?'bd':lp>35?'wn':'gd',peso(nn)+' / mo net after hire',
+      nn<0?`You would lose ${peso(-nn)} a month unless sales grow.`:lp>35?`Labor would reach ${pctf(lp)} of sales, above the 25 to 35% range common in food service.`:`Labor would be ${pctf(lp)} of sales. Affordable at current sales.`,
+      `${avgBasis}: net income ${peso(a.net)} − hire ${peso(hire)}`));}
 
-  // 7. Join Grab / FoodPanda?
-  // Platform takes 28% commission. Delivery orders' effective revenue = 72% of face value.
-  // Break-even: your EBITDA margin must exceed 28% for delivery to be profitable.
-  const delivMargin = eM - 28;
-  set('d-deliv-val', delivMargin >= 0 ? '+' + delivMargin.toFixed(1) + '% left' : delivMargin.toFixed(1) + '% short');
-  if (!mRev) {
-    dc('dc-deliv','nt'); set('d-deliv-note','Enter data to assess');
-  } else if (delivMargin >= 10) {
-    dc('dc-deliv','gd'); set('d-deliv-note','Your ' + eM.toFixed(1) + '% EBITDA margin can absorb the 28% commission. Delivery is profitable.');
-  } else if (delivMargin >= 0) {
-    dc('dc-deliv','wn'); set('d-deliv-note','Marginal. Delivery orders may break even but add workload. Need stronger margins first.');
-  } else {
-    dc('dc-deliv','bd'); set('d-deliv-note','At ' + eM.toFixed(1) + '% EBITDA, delivery orders will operate at a loss per order after commission.');
-  }
+  // 6 Discount
+  const d=S('disc');
+  if(d===null)out.push(card(DEC_TITLES[5],'nt','—','Fill in "Planned discount" above.'));
+  else{const df=d/100,nn=a.net-a.rev*df,ok=gm>df,lift=ok?(gm/(gm-df)-1)*100:null;
+    out.push(card(DEC_TITLES[5],!ok||nn<0?'bd':lift>25?'wn':'gd',ok?`+${lift.toFixed(0)}% orders needed`:'Not recoverable',
+      ok?`To earn the same gross profit you need ${lift.toFixed(0)}% more orders. If orders stay the same, net income becomes ${peso(nn)} / mo.`:'The discount is bigger than your gross margin. Every discounted sale loses money.',
+      `${avgBasis}: gross margin ${pctf(gm*100)} · discount ${d}%`));}
 
-  // 8. Bulk buy inventory (3 months)?
-  const bulkCost = inv * 3;
-  const monthsCovered = mNet > 0 ? (mNet / inv).toFixed(1) : 0;
-  set('d-bulk-val', fmt(bulkCost));
-  if (!mRev || inv === 0) {
-    dc('dc-bulk','nt'); set('d-bulk-note','Enter inventory cost to assess');
-  } else if (mNet >= bulkCost) {
-    dc('dc-bulk','gd'); set('d-bulk-note','Safe. Net income (' + fmt(mNet) + '/mo) covers 3-month stock. No cash crunch risk.');
-  } else if (mNet >= inv * 1.5) {
-    dc('dc-bulk','wn'); set('d-bulk-note','Manageable but tight. Net income covers ' + monthsCovered + 'mo of stock. Consider buying 1.5× instead.');
-  } else {
-    dc('dc-bulk','bd'); set('d-bulk-note','Risk of cash crunch. Net income only covers ' + monthsCovered + 'mo of stock. Buy monthly for now.');
-  }
+  // 7 Delivery app
+  const c=S('comm');
+  if(c===null)out.push(card(DEC_TITLES[6],'nt','—','Fill in "Delivery app commission" above.'));
+  else{const left=gm*100-c;
+    out.push(card(DEC_TITLES[6],left>=15?'gd':left>=0?'wn':'bd',`${left<0?'−':''}₱${Math.abs(left).toFixed(0)} per ₱100 sale`,
+      left<0?'Each delivery sale loses money after ingredients, packaging and commission. Raise app menu prices first.':left<15?'Thin. Worth it only if the app brings many new orders. Consider higher prices on the app.':'Each delivery order still adds profit after commission.',
+      `${avgBasis}: gross margin ${pctf(gm*100)} − commission ${c}%`));}
 
-  // ── INSIGHTS ──
-  const cogsPct = pct(mCOGS, mRev);
-  const ins = [];
-  if (mRev > 0) {
-    if (cogsPct > 40) ins.push({i:'⚠️', t:`COGS is <strong>${cogsPct.toFixed(1)}%</strong> of revenue — above 40%, which is high for street food. Review your ingredient sourcing, portion sizes, or pricing.`});
-    if (eM < 0) ins.push({i:'🚨', t:`The business is currently <strong>operating at a loss</strong>. Do not take on new loans or increase marketing spend until costs are brought under control.`});
-    else if (eM < 15) ins.push({i:'📉', t:`EBITDA margin is <strong>${eM.toFixed(1)}%</strong> — below the healthy 15–20% floor for food operations. Focus on reducing COGS or boosting revenue.`});
-    if (mktPct < 3 && eM >= 15) ins.push({i:'📣', t:`Only <strong>${mktPct.toFixed(1)}%</strong> of revenue goes to marketing. Even <strong>${fmt(mRev*0.05)}/month</strong> in boosted posts can lift orders by 10–20%.`});
-    if (eM >= 20 && campBudget > 1000) ins.push({i:'✅', t:`You have <strong>${fmt(campBudget)}/month</strong> in spare campaign budget after keeping a 20% cash reserve. Consider a push campaign this month.`});
-    if (eM >= 25) ins.push({i:'🚀', t:`Strong <strong>${eM.toFixed(1)}%</strong> EBITDA margin. The business is ready to explore a 2nd stall, franchise model, or catering arm.`});
-    if (loanAmt >= 100000 && eM >= 20) ins.push({i:'🏦', t:`Your EBITDA supports a loan of up to <strong>${fmt(loanAmt)}</strong> for equipment, a new station, or a 2nd location.`});
-    if (debt > 0 && mEBITDA > 0) {
-      const dscr = mEBITDA/debt;
-      if (dscr < 1.25) ins.push({i:'💳', t:`Debt coverage ratio (DSCR) is <strong>${dscr.toFixed(2)}×</strong> — below the 1.25× minimum banks require. Avoid new loans until EBITDA improves.`});
-    }
-    if (totalAct >= 3) {
-      const avgQ = annRev / (totalAct / 3);
-      const bestQ = Math.max(...qRevs);
-      const worstQ = Math.min(...qRevs);
-      if (bestQ > worstQ * 1.3) ins.push({i:'📅', t:`Revenue shows seasonal variation — your best quarter is <strong>${fmt(bestQ)}</strong> vs <strong>${fmt(worstQ)}</strong> for the slowest. Plan marketing spend heavier in the lower months.`});
-    }
-  }
-  document.getElementById('insights').innerHTML = ins.length
-    ? ins.map(x => `<div class="insight"><span class="i-icon">${x.i}</span><span>${x.t}</span></div>`).join('')
-    : '<div class="insight"><span class="i-icon">👆</span><span>Fill in your figures on the left to see tailored insights for your business.</span></div>';
+  // 8 Bulk buy
+  const cash=S('cash'),bm=S('bulk');
+  if(cash===null||bm===null)out.push(card(DEC_TITLES[7],'nt','—','Fill in "Cash on hand today" and "Months of stock to buy" above.'));
+  else if(!a.inv)out.push(card(DEC_TITLES[7],'nt','—','No inventory costs entered in your monthly data.'));
+  else{const cost=a.inv*bm,buf=a.opex+a.debt,left=cash-cost;
+    out.push(card(DEC_TITLES[7],left>=buf?'gd':left>=0?'wn':'bd',peso(cost),
+      left<0?`Costs ${peso(-left)} more than your cash on hand.`:left<buf?`Leaves ${peso(left)}, less than one month of operating costs and loan payments (${peso(buf)}).`:`Leaves ${peso(left)}, enough for one month of operating costs and loan payments (${peso(buf)}).`,
+      `${avgBasis}: inventory ${peso(a.inv)} × ${bm} months`));}
+
+  $('dec').innerHTML=out.join('');
 }
 
-calc();
+/* ---------- Insights (facts from entered data only) ---------- */
+function renderInsights(){
+  const e=entered(),items=[];
+  const partial=[...Array(12).keys()].filter(i=>hasAny(i)&&!hasRev(i));
+  if(partial.length)items.push(['wn',`${names(partial)} ${partial.length>1?'have':'has'} costs but no sales entered, so ${partial.length>1?'they are':'it is'} left out of every total.`]);
+  if(!e.length){items.push(['',`No sales entered yet. Pick a month at the top and fill in its figures.`]);$('ins').innerHTML=items.map(([c,t])=>`<li class="${c}">${t}</li>`).join('');return}
+  const a=avgPL(e);
+  if(e.length>=2){
+    const [p,l]=e.slice(-2),pr=monthPL(p).rev,lr=monthPL(l).rev;
+    if(pr){const ch=(lr-pr)/pr*100;items.push([ch<0?'wn':'gd',`Sales in ${MONTHS[l]} were ${peso(lr)}, ${Math.abs(ch).toFixed(1)}% ${ch<0?'lower':'higher'} than ${MONTHS[p]} (${peso(pr)}).`])}
+    const byNet=e.map(i=>[i,monthPL(i).net]).sort((x,y)=>y[1]-x[1]);
+    items.push(['',`Best month for net income: ${MONTHS[byNet[0][0]]} (${peso(byNet[0][1])}). Weakest: ${MONTHS[byNet[byNet.length-1][0]]} (${peso(byNet[byNet.length-1][1])}).`]);
+  }
+  const loss=e.filter(i=>monthPL(i).net<0);
+  if(loss.length)items.push(['bd',`Net loss in ${names(loss)}.`]);
+  const cp=a.rev?a.cogs/a.rev*100:0;
+  if(cp>40)items.push(['wn',`COGS averages ${pctf(cp)} of sales. Many food businesses aim for 40% or lower. Check ingredient prices, portions and menu prices.`]);
+  if(a.ebitda<0)items.push(['bd',`On average the business loses ${peso(-a.net)} a month. Hold off on loans and bigger marketing until this turns positive.`]);
+  if(a.debt>0&&a.ebitda>0&&a.ebitda/a.debt<1.25)items.push(['bd',`EBITDA covers loan payments only ${(a.ebitda/a.debt).toFixed(2)}×. Banks usually require at least 1.25×.`]);
+  if(items.length===(partial.length?1:0))items.push(['gd','No problems flagged in the months entered.']);
+  $('ins').innerHTML=items.map(([c,t])=>`<li class="${c}">${t}</li>`).join('');
+}
+
+/* ---------- Export ---------- */
+function exportCSV(){
+  const e=entered();
+  if(!e.length){alert('No months with sales entered yet.');return}
+  const head=['Month','Gross sales','Inventory','Packaging','COGS','Gross profit','Labor','Rent','Utilities','Other operating','Operating costs','Paid ads','Promos','Collabs','Marketing','EBITDA','Loan payments','Net income'];
+  const keys=['rev','inv','pack','cogs','gp','labor','rent','util','other','opex','ads','promo','collab','mkt','ebitda','debt','net'];
+  const lines=[head.join(',')].concat(e.map(i=>{const p=monthPL(i);return [MONTHS[i]].concat(keys.map(k=>Math.round(p[k]*100)/100)).join(',')}));
+  const s=sumPL(e);lines.push(['Total'].concat(keys.map(k=>Math.round(s[k]*100)/100)).join(','));
+  const blob=new Blob([lines.join('\n')],{type:'text/csv'}),url=URL.createObjectURL(blob),link=document.createElement('a');
+  link.href=url;link.download='umami-street-pnl.csv';document.body.appendChild(link);link.click();link.remove();URL.revokeObjectURL(url);
+}
+
+function update(){
+  const V=views();
+  renderTabs();renderFormTotals();renderSummary(V);renderPL(V);renderMonthTable();renderDecisions();renderInsights();
+}
+
+renderForm();renderSettings();fillForm();fillSettings();update();
 </script>
 </body>
 </html>
