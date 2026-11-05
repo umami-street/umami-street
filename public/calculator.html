@@ -159,20 +159,13 @@ body{background:var(--bg);color:var(--charcoal);font-family:'Inter',sans-serif;f
   <!-- LEFT: DATA ENTRY FORM -->
   <div>
 
-    <!-- REVENUE -->
-    <div class="form-section">
-      <div class="sec-head"><span class="sec-head-icon">📊</span>Revenue</div>
-
-      <div class="field-row">
-        <div class="field-label">
-          <div class="field-name">Monthly Gross Revenue</div>
-          <div class="field-hint">Total sales income for the month — check your GCash summary, cash count, or POS total. Include all menu items combined.</div>
-        </div>
-        <div class="field-right">
-          <span class="field-pfx">₱</span>
-          <input class="field-input" id="rev" type="number" value="156000" min="0" oninput="calc()" style="width:140px">
-        </div>
+    <!-- REVENUE (derived from monthly tracker) -->
+    <div style="background:var(--charcoal);border:1px solid var(--charcoal);padding:12px 16px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+      <div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(245,240,232,.5)">Monthly Revenue Average</div>
+        <div style="font-size:10px;color:rgba(245,240,232,.3);margin-top:2px">Auto-calculated from your monthly tracker on the right</div>
       </div>
+      <div style="font-size:22px;font-weight:700;font-family:'Playfair Display',serif;color:var(--cream)" id="c-rev-avg">₱0</div>
     </div>
 
     <!-- COST OF GOODS SOLD -->
@@ -409,8 +402,8 @@ body{background:var(--bg);color:var(--charcoal);font-family:'Inter',sans-serif;f
 
     <!-- Monthly Tracker -->
     <div class="card">
-      <div class="card-title">Monthly Revenue Tracker — Enter actual months you have data for</div>
-      <p style="font-size:11px;color:var(--muted);margin-bottom:12px">Blank months are projected from your main revenue above. Q1–Q4 and Annual update automatically.</p>
+      <div class="card-title">Monthly Revenue — Enter your actual sales per month</div>
+      <p style="font-size:11px;color:var(--muted);margin-bottom:12px">Fill in the months you have data for. Blank months are projected from your monthly average. The left column shows your average month; Q1–Q4 and Annual use your actual figures.</p>
       <div class="month-grid">
 
         <div class="month-cell"><div class="month-lbl">January</div><div class="month-row-inner"><span class="mpfx">₱</span><input class="month-input" id="m01" type="number" min="0" placeholder="—" oninput="calc()"></div></div>
@@ -558,8 +551,16 @@ function qPL(rev, months, cogsRatio, mOpEx, mkt, debt) {
 }
 
 function calc() {
-  // ── MAIN MONTHLY INPUTS ──
-  const mRev     = g('rev');
+  // ── REVENUE: derived from monthly tracker (average of filled months) ──
+  const rawMonths = Array.from({length:12}, (_,i) => {
+    const id = 'm' + String(i+1).padStart(2,'0');
+    const v = parseFloat(document.getElementById(id).value);
+    return (!isNaN(v) && v > 0) ? v : null;
+  });
+  const filledVals = rawMonths.filter(v => v !== null);
+  const mRev = filledVals.length > 0 ? filledVals.reduce((a,b)=>a+b,0) / filledVals.length : 0;
+
+  // ── COST / EXPENSE INPUTS ──
   const inv      = g('inv');
   const pack     = g('pack');
   const labor    = g('labor');
@@ -582,14 +583,11 @@ function calc() {
   const mktPct  = pct(mkt, mRev);
   const cogsRatio = mRev > 0 ? mCOGS / mRev : 0;
 
-  // ── MONTHLY TRACKER ──
-  const months = Array.from({length:12}, (_,i) => {
-    const id = 'm' + String(i+1).padStart(2,'0');
-    const el = document.getElementById(id);
-    const v = parseFloat(el.value);
-    const hasData = !isNaN(v) && v > 0;
-    el.classList.toggle('actual', hasData);
-    return hasData ? v : mRev;
+  // ── MONTHLY TRACKER — style actual cells, fill blanks with mRev ──
+  const months = rawMonths.map((v, i) => {
+    const el = document.getElementById('m' + String(i+1).padStart(2,'0'));
+    el.classList.toggle('actual', v !== null);
+    return v !== null ? v : mRev;
   });
 
   // Quarter sums and actuals count
@@ -600,11 +598,7 @@ function calc() {
     const v = parseFloat(document.getElementById(id).value);
     return !isNaN(v) && v > 0;
   }).length);
-  const totalAct = months.filter((_,i) => {
-    const id = 'm' + String(i+1).padStart(2,'0');
-    const v = parseFloat(document.getElementById(id).value);
-    return !isNaN(v) && v > 0;
-  }).length;
+  const totalAct = filledVals.length;
 
   // Quarter P&L
   const qPLs = [0,1,2,3].map(qi => qPL(qRevs[qi], 3, cogsRatio, mOpEx, mkt, debt));
@@ -634,6 +628,7 @@ function calc() {
   }
 
   // ── LEFT SIDE INLINE CALCS ──
+  set('c-rev-avg',   fmt(mRev));
   set('c-cogs',      fmt(mCOGS));
   set('c-cogs-pct',  pct(mCOGS,mRev).toFixed(1) + '% of rev');
   set('c-gp',        sgn(mGP) + fmt(Math.abs(mGP)));
