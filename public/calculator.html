@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Umami Street — Profitability Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F3EFE9;--card:#fff;--charcoal:#2C2C2C;--maroon:#8B1A1A;--maroon2:#A52020;
+  --cream:#F5F0E8;--muted:#7A746E;--border:#E5DFD4;
+  --green:#16A34A;--yellow:#B45309;--red:#DC2626;
+  --green-bg:#F0FDF4;--yellow-bg:#FFFBEB;--red-bg:#FEF2F2;
+  --shadow:0 1px 3px rgba(0,0,0,.07),0 4px 14px rgba(0,0,0,.04);
+}
+body{background:var(--bg);color:var(--charcoal);font-family:'Inter',sans-serif;font-size:14px;line-height:1.5;min-height:100vh}
+
+/* HEADER */
+.header{background:var(--charcoal);color:var(--cream);padding:18px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.header-left{display:flex;align-items:center;gap:14px}
+.header-logo{width:42px;height:42px;background:var(--maroon);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.header-title{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:var(--cream)}
+.header-sub{font-size:11px;color:rgba(245,240,232,.5);margin-top:1px}
+.period-wrap{display:flex;gap:6px}
+.period-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:rgba(245,240,232,.6);padding:6px 16px;cursor:pointer;font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;transition:all .15s;font-family:'Inter',sans-serif;border-radius:2px}
+.period-btn:hover{color:var(--cream);border-color:rgba(255,255,255,.3)}
+.period-btn.active{background:var(--maroon);border-color:var(--maroon);color:var(--cream)}
+
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:370px 1fr;gap:18px;padding:18px 24px;max-width:1240px;margin:0 auto}
+
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border);box-shadow:var(--shadow);padding:18px;margin-bottom:14px}
+.card:last-child{margin-bottom:0}
+.card-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--maroon);margin-bottom:14px;padding-bottom:9px;border-bottom:1px solid var(--border)}
+
+/* SLIDERS */
+.srow{margin-bottom:13px}.srow:last-child{margin-bottom:0}
+.slabel{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.sname{font-size:12px;font-weight:600;color:var(--charcoal)}
+.sval-wrap{display:flex;align-items:center;gap:2px}
+.spfx{font-size:11px;color:var(--muted)}
+.sval{background:none;border:none;font-size:12px;font-weight:700;color:var(--charcoal);width:68px;text-align:right;font-family:'Inter',sans-serif;padding:2px 3px;border-radius:2px;cursor:text}
+.sval:focus{outline:2px solid var(--maroon);background:rgba(139,26,26,.05)}
+.shint{font-size:10px;color:var(--muted);margin-top:2px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;background:var(--border);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:var(--maroon);cursor:pointer;box-shadow:0 1px 4px rgba(139,26,26,.35);transition:transform .1s}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2)}
+input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;background:var(--maroon);cursor:pointer;border:none}
+
+/* BENCH TABLE */
+.bench-row{display:flex;justify-content:space-between;padding:4px 0;font-size:11px;border-bottom:1px solid var(--border)}
+.bench-row:last-child{border-bottom:none}
+
+/* METRIC GRID */
+.metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.mc{background:var(--bg);border:1px solid var(--border);padding:13px 14px}
+.mc-lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:3px}
+.mc-val{font-size:21px;font-weight:700;color:var(--charcoal);font-family:'Playfair Display',serif;line-height:1.1}
+.mc-val.hi{color:var(--maroon)}.mc-val.gn{color:var(--green)}.mc-val.rd{color:var(--red)}
+.mc-sub{font-size:10px;color:var(--muted);margin-top:2px}
+
+/* WATERFALL */
+.wf-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border)}
+.wf-row:last-child{border-bottom:none}
+.wf-lbl{flex:1;font-size:12px;color:var(--charcoal)}
+.wf-lbl.b{font-weight:700}.wf-lbl.m{color:var(--muted);font-size:11px}
+.wf-track{width:100px;height:7px;background:var(--border);border-radius:2px;overflow:hidden;flex-shrink:0}
+.wf-bar{height:100%;border-radius:2px;transition:width .3s ease}
+.bar-rev{background:var(--charcoal)}.bar-cogs{background:#EF4444}.bar-gp{background:#3B82F6}
+.bar-opex{background:#F59E0B}.bar-mkt{background:#D97706}.bar-ebitda{background:var(--green)}
+.wf-amt{width:88px;text-align:right;font-size:12px;font-weight:600;flex-shrink:0}
+.wf-amt.rd{color:var(--red)}.wf-amt.bl{color:#3B82F6}.wf-amt.gn{color:var(--green)}.wf-amt.yl{color:var(--yellow)}
+
+/* SUMMARY TABLE */
+.sum-table{width:100%;border-collapse:collapse;font-size:12px}
+.sum-table th{text-align:right;padding:5px 7px;color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;border-bottom:2px solid var(--border)}
+.sum-table th:first-child{text-align:left}
+.sum-table td{padding:6px 7px;border-bottom:1px solid var(--border)}
+.sum-table td:not(:first-child){text-align:right}
+.sum-table tr:last-child td{border-bottom:none}
+
+/* DECISION GRID */
+.dec-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.dc{border:1px solid var(--border);padding:14px;transition:border-color .2s}
+.dc.gd{border-color:#86EFAC;background:var(--green-bg)}
+.dc.wn{border-color:#FDE68A;background:var(--yellow-bg)}
+.dc.bd{border-color:#FCA5A5;background:var(--red-bg)}
+.dc.nt{background:var(--bg)}
+.dc-icon{font-size:19px;margin-bottom:7px}
+.dc-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:3px}
+.dc-val{font-size:16px;font-weight:700;color:var(--charcoal);font-family:'Playfair Display',serif;margin-bottom:3px}
+.dc-note{font-size:11px;color:var(--muted);line-height:1.4}
+.gauge-wrap{margin-top:7px}
+.gauge-track{height:5px;background:var(--border);border-radius:3px}
+.gauge-fill{height:100%;border-radius:3px;transition:width .3s ease;max-width:100%}
+.gauge-marks{display:flex;justify-content:space-between;margin-top:2px;font-size:9px;color:var(--muted)}
+
+/* INSIGHTS */
+.insight{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;background:var(--bg);border:1px solid var(--border);font-size:12px;line-height:1.55;color:var(--charcoal)}
+.insight+.insight{margin-top:7px}
+.insight-icon{font-size:15px;flex-shrink:0;margin-top:1px}
+
+/* STATUS */
+.tag{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 7px;border-radius:2px}
+.tag.gn{background:#DCFCE7;color:#15803D}.tag.yl{background:#FEF9C3;color:#A16207}.tag.rd{background:#FEE2E2;color:#B91C1C}
+
+@media(max-width:860px){.layout{grid-template-columns:1fr;padding:14px}.header{padding:14px 16px}.period-wrap{flex-wrap:wrap}}
+@media(max-width:460px){.metric-grid,.dec-grid{grid-template-columns:1fr}.wf-track{width:60px}.wf-amt{width:72px}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="header-logo">🍜</div>
+    <div>
+      <div class="header-title">Umami Street — Profitability Calculator</div>
+      <div class="header-sub">Food Business Financial Model · Real-time · All figures in Philippine Peso (₱)</div>
+    </div>
+  </div>
+  <div class="period-wrap">
+    <button class="period-btn active" onclick="setPeriod('monthly',this)">Monthly</button>
+    <button class="period-btn" onclick="setPeriod('quarterly',this)">Quarterly</button>
+    <button class="period-btn" onclick="setPeriod('yearly',this)">Yearly</button>
+  </div>
+</div>
+
+<div class="layout">
+
+  <!-- ═══ LEFT: INPUTS ═══ -->
+  <div>
+
+    <div class="card">
+      <div class="card-title">Revenue Inputs</div>
+      <div class="srow">
+        <div class="slabel">
+          <span class="sname">Avg Daily Orders</span>
+          <div class="sval-wrap"><input class="sval" id="v-orders" type="number" value="30" min="1" max="400" oninput="snap('orders',this.value)"><span class="spfx">/day</span></div>
+        </div>
+        <input type="range" id="orders" min="1" max="400" value="30" oninput="snav('orders',this.value)">
+        <div class="shint">Small stall: 20–80 · food park: 80–200+ orders/day</div>
+      </div>
+      <div class="srow">
+        <div class="slabel">
+          <span class="sname">Average Order Value</span>
+          <div class="sval-wrap"><span class="spfx">₱</span><input class="sval" id="v-aov" type="number" value="200" min="50" max="1500" oninput="snap('aov',this.value)"></div>
+        </div>
+        <input type="range" id="aov" min="50" max="1500" value="200" oninput="snav('aov',this.value)">
+        <div class="shint">Your menu avg: ~₱150–250 per transaction</div>
+      </div>
+      <div class="srow">
+        <div class="slabel">
+          <span class="sname">Operating Days / Month</span>
+          <div class="sval-wrap"><input class="sval" id="v-days" type="number" value="26" min="1" max="31" oninput="snap('days',this.value)"><span class="spfx">days</span></div>
+        </div>
+        <input type="range" id="days" min="1" max="31" value="26" oninput="snav('days',this.value)">
+        <div class="shint">26 = closed Sundays + 2 holidays</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Cost of Goods Sold (COGS)</div>
+      <div class="srow">
+        <div class="slabel">
+          <span class="sname">Food Cost Percentage</span>
+          <div class="sval-wrap"><input class="sval" id="v-foodcost" type="number" value="35" min="15" max="65" oninput="snap('foodcost',this.value)"><span class="spfx">%</span></div>
+        </div>
+        <input type="range" id="foodcost" min="15" max="65" value="35" oninput="snav('foodcost',this.value)">
+        <div class="shint">Ingredients + direct supplies ÷ revenue</div>
+      </div>
+      <div style="background:var(--bg);border:1px solid var(--border);padding:9px 11px;margin-top:10px">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:7px">Industry Benchmarks</div>
+        <div class="bench-row"><span>Chicken wings / grilled meats</span><span style="font-weight:700">30–38%</span></div>
+        <div class="bench-row"><span>Takoyaki / snacks</span><span style="font-weight:700">28–35%</span></div>
+        <div class="bench-row"><span>Rice meals &amp; combos</span><span style="font-weight:700">32–40%</span></div>
+        <div class="bench-row"><span>Milk tea / drinks</span><span style="font-weight:700">20–28%</span></div>
+        <div class="bench-row" style="color:var(--green)"><span style="font-weight:600">Blended street food target</span><span style="font-weight:700">28–35%</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Monthly Fixed Operating Costs</div>
+      <div class="srow">
+        <div class="slabel"><span class="sname">Labor / Wages</span><div class="sval-wrap"><span class="spfx">₱</span><input class="sval" id="v-labor" type="number" value="15000" min="0" max="120000" step="500" oninput="snap('labor',this.value)"></div></div>
+        <input type="range" id="labor" min="0" max="120000" value="15000" step="500" oninput="snav('labor',this.value)">
+      </div>
+      <div class="srow">
+        <div class="slabel"><span class="sname">Rent / Stall Fee</span><div class="sval-wrap"><span class="spfx">₱</span><input class="sval" id="v-rent" type="number" value="8000" min="0" max="80000" step="500" oninput="snap('rent',this.value)"></div></div>
+        <input type="range" id="rent" min="0" max="80000" value="8000" step="500" oninput="snav('rent',this.value)">
+      </div>
+      <div class="srow">
+        <div class="slabel"><span class="sname">Utilities (electricity, gas, water)</span><div class="sval-wrap"><span class="spfx">₱</span><input class="sval" id="v-util" type="number" value="4000" min="0" max="30000" step="500" oninput="snap('util',this.value)"></div></div>
+        <input type="range" id="util" min="0" max="30000" value="4000" step="500" oninput="snav('util',this.value)">
+      </div>
+      <div class="srow">
+        <div class="slabel"><span class="sname">Packaging &amp; Supplies</span><div class="sval-wrap"><span class="spfx">₱</span><input class="sval" id="v-pack" type="number" value="3000" min="0" max="20000" step="200" oninput="snap('pack',this.value)"></div></div>
+        <input type="range" id="pack" min="0" max="20000" value="3000" step="200" oninput="snav('pack',this.value)">
+      </div>
+      <div class="srow">
+        <div class="slabel"><span class="sname">Other Operating Costs</span><div class="sval-wrap"><span class="spfx">₱</span><input class="sval" id="v-other" type="number" value="2000" min="0" max="20000" step="200" oninput="snap('other',this.value)"></div></div>
+        <input type="range" id="other" min="0" max="20000" value="2000" step="200" oninput="snav('other',this.value)">
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Marketing &amp; Debt Service</div>
+      <div class="srow">
+        <div class="slabel"><span class="sname">Monthly Marketing Budget</span><div class="sval-wrap"><span class="spfx">₱</span><input class="sval" id="v-mkt" type="number" value="2000" min="0" max="60000" step="500" oninput="snap('mkt',this.value)"></div></div>
+        <input type="range" id="mkt" min="0" max="60000" value="2000" step="500" oninput="snav('mkt',this.value)">
+        <div class="shint">Boosted posts, promos, GCash QR, flyers, partnerships</div>
+      </div>
+      <div class="srow">
+        <div class="slabel"><span class="sname">Existing Loan Payments</span><div class="sval-wrap"><span class="spfx">₱</span><input class="sval" id="v-debt" type="number" value="0" min="0" max="50000" step="500" oninput="snap('debt',this.value)"></div></div>
+        <input type="range" id="debt" min="0" max="50000" value="0" step="500" oninput="snav('debt',this.value)">
+        <div class="shint">SSS Salary Loan, bank, DTI Pondo, etc.</div>
+      </div>
+    </div>
+
+  </div><!-- end inputs col -->
+
+  <!-- ═══ RIGHT: RESULTS ═══ -->
+  <div>
+
+    <!-- Big 4 Metrics -->
+    <div class="card">
+      <div class="card-title" id="results-title">Monthly Financial Summary</div>
+      <div class="metric-grid">
+        <div class="mc">
+          <div class="mc-lbl">Gross Revenue</div>
+          <div class="mc-val" id="m-rev">₱0</div>
+          <div class="mc-sub" id="m-rev-sub">— orders</div>
+        </div>
+        <div class="mc">
+          <div class="mc-lbl">Gross Profit</div>
+          <div class="mc-val hi" id="m-gp">₱0</div>
+          <div class="mc-sub" id="m-gp-pct">0% gross margin</div>
+        </div>
+        <div class="mc">
+          <div class="mc-lbl" id="ebitda-lbl">EBITDA</div>
+          <div class="mc-val gn" id="m-ebitda">₱0</div>
+          <div class="mc-sub" id="m-ebitda-pct">0% EBITDA margin</div>
+        </div>
+        <div class="mc">
+          <div class="mc-lbl">Net Operating Income</div>
+          <div class="mc-val" id="m-net">₱0</div>
+          <div class="mc-sub" id="m-net-pct">0% net margin</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Waterfall -->
+    <div class="card">
+      <div class="card-title" id="wf-title">Monthly Cost Breakdown Waterfall</div>
+      <div class="wf-row">
+        <div class="wf-lbl b">Gross Revenue</div>
+        <div class="wf-track"><div class="wf-bar bar-rev" id="b-rev" style="width:100%"></div></div>
+        <div class="wf-amt" id="w-rev">₱0</div>
+      </div>
+      <div class="wf-row">
+        <div class="wf-lbl m">( − ) Food Cost / COGS</div>
+        <div class="wf-track"><div class="wf-bar bar-cogs" id="b-cogs" style="width:0"></div></div>
+        <div class="wf-amt rd" id="w-cogs">−₱0</div>
+      </div>
+      <div class="wf-row">
+        <div class="wf-lbl b" style="color:#3B82F6">= Gross Profit</div>
+        <div class="wf-track"><div class="wf-bar bar-gp" id="b-gp" style="width:0"></div></div>
+        <div class="wf-amt bl" id="w-gp">₱0</div>
+      </div>
+      <div class="wf-row">
+        <div class="wf-lbl m">( − ) Fixed Operating Costs</div>
+        <div class="wf-track"><div class="wf-bar bar-opex" id="b-opex" style="width:0"></div></div>
+        <div class="wf-amt yl" id="w-opex">−₱0</div>
+      </div>
+      <div class="wf-row">
+        <div class="wf-lbl m">( − ) Marketing Spend</div>
+        <div class="wf-track"><div class="wf-bar bar-mkt" id="b-mkt" style="width:0"></div></div>
+        <div class="wf-amt yl" id="w-mkt">−₱0</div>
+      </div>
+      <div class="wf-row">
+        <div class="wf-lbl b" style="color:var(--green)">= EBITDA</div>
+        <div class="wf-track"><div class="wf-bar bar-ebitda" id="b-ebitda" style="width:0"></div></div>
+        <div class="wf-amt gn" id="w-ebitda">₱0</div>
+      </div>
+      <div class="wf-row" id="debt-wf-row" style="display:none">
+        <div class="wf-lbl m">( − ) Loan / Debt Service</div>
+        <div class="wf-track"><div class="wf-bar bar-cogs" id="b-debt" style="width:0"></div></div>
+        <div class="wf-amt rd" id="w-debt">−₱0</div>
+      </div>
+      <div class="wf-row">
+        <div class="wf-lbl b">= Net Operating Income</div>
+        <div class="wf-track"><div class="wf-bar bar-ebitda" id="b-net" style="width:0"></div></div>
+        <div class="wf-amt gn" id="w-net">₱0</div>
+      </div>
+    </div>
+
+    <!-- Period Summary Table — always shows all 3 -->
+    <div class="card">
+      <div class="card-title">Revenue &amp; Profit — Monthly · Quarterly · Yearly</div>
+      <table class="sum-table">
+        <thead>
+          <tr>
+            <th style="text-align:left">Line Item</th>
+            <th>Monthly</th>
+            <th>Quarterly</th>
+            <th>Yearly</th>
+          </tr>
+        </thead>
+        <tbody id="sum-tbody"></tbody>
+      </table>
+    </div>
+
+    <!-- Decision Dashboard -->
+    <div class="card">
+      <div class="card-title">Business Decision Dashboard</div>
+      <div class="dec-grid">
+
+        <div class="dc nt" id="dc-mkt">
+          <div class="dc-icon">📣</div>
+          <div class="dc-lbl">Marketing Spend</div>
+          <div class="dc-val" id="d-mkt-val">0%</div>
+          <div class="dc-note" id="d-mkt-note">of revenue · target 5–10%</div>
+          <div class="gauge-wrap">
+            <div class="gauge-track"><div class="gauge-fill" id="g-mkt" style="width:0;background:var(--muted)"></div></div>
+            <div class="gauge-marks"><span>0%</span><span>5%</span><span>10%</span><span>15%</span></div>
+          </div>
+        </div>
+
+        <div class="dc nt" id="dc-loan">
+          <div class="dc-icon">🏦</div>
+          <div class="dc-lbl">Max Loanable Amount</div>
+          <div class="dc-val" id="d-loan-val">₱0</div>
+          <div class="dc-note" id="d-loan-note">DSCR 1.25x · 3yr · 12% p.a.</div>
+        </div>
+
+        <div class="dc nt" id="dc-scale">
+          <div class="dc-icon">📈</div>
+          <div class="dc-lbl">Scale Readiness</div>
+          <div class="dc-val" id="d-scale-val">—</div>
+          <div class="dc-note" id="d-scale-note">Based on EBITDA margin</div>
+        </div>
+
+        <div class="dc nt" id="dc-camp">
+          <div class="dc-icon">🎯</div>
+          <div class="dc-lbl">Spare Campaign Budget</div>
+          <div class="dc-val" id="d-camp-val">₱0</div>
+          <div class="dc-note" id="d-camp-note">After 20% cash reserve</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Insights -->
+    <div class="card">
+      <div class="card-title">Actionable Insights</div>
+      <div id="insights"></div>
+    </div>
+
+  </div><!-- end results col -->
+</div>
+
+<script>
+let period = 'monthly';
+const mul = {monthly:1, quarterly:3, yearly:12};
+
+function setPeriod(p, btn) {
+  period = p;
+  document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  calc();
+}
+
+function fmt(n) {
+  const a = Math.abs(Math.round(n));
+  if (a >= 1000000) return '₱' + (a/1000000).toFixed(2) + 'M';
+  if (a >= 1000) return '₱' + a.toLocaleString('en-PH');
+  return '₱' + a;
+}
+function pct(a, b) { return b ? (a/b*100) : 0; }
+function bw(v, mx) { return Math.min(100, Math.max(0, mx ? (v/mx*100) : 0)) + '%'; }
+function g(id) { return parseFloat(document.getElementById(id).value) || 0; }
+
+// Sync range ↔ number input
+function snav(id, v) { document.getElementById('v-'+id).value = v; calc(); }
+function snap(id, v) { document.getElementById(id).value = v; calc(); }
+
+function calc() {
+  // ── MONTHLY BASE FIGURES ──
+  const orders  = g('orders');
+  const aov     = g('aov');
+  const days    = g('days');
+  const fcPct   = g('foodcost');
+  const labor   = g('labor');
+  const rent    = g('rent');
+  const util    = g('util');
+  const pack    = g('pack');
+  const other   = g('other');
+  const mktSpend= g('mkt');
+  const debt    = g('debt');
+
+  const mRev   = orders * aov * days;
+  const mCOGS  = mRev * (fcPct/100);
+  const mGP    = mRev - mCOGS;
+  const mOpEx  = labor + rent + util + pack + other;
+  const mEBITDA= mGP - mOpEx - mktSpend;
+  const mNet   = mEBITDA - debt;
+
+  // ── PERIOD FIGURES ──
+  const m = mul[period];
+  const pRev    = mRev * m;
+  const pCOGS   = mCOGS * m;
+  const pGP     = mGP * m;
+  const pOpEx   = mOpEx * m;
+  const pMkt    = mktSpend * m;
+  const pEBITDA = mEBITDA * m;
+  const pDebt   = debt * m;
+  const pNet    = mNet * m;
+
+  const gpMargin     = pct(mGP, mRev);
+  const ebitdaMargin = pct(mEBITDA, mRev);
+  const netMargin    = pct(mNet, mRev);
+  const mktPct       = pct(mktSpend, mRev);
+
+  // ── HEADER LABELS ──
+  const lbl = {monthly:'Monthly', quarterly:'Quarterly (3 mo)', yearly:'Yearly'};
+  document.getElementById('results-title').textContent = lbl[period] + ' Financial Summary';
+  document.getElementById('ebitda-lbl').textContent = lbl[period] + ' EBITDA';
+  document.getElementById('wf-title').textContent = lbl[period] + ' Cost Breakdown Waterfall';
+
+  // ── BIG 4 ──
+  document.getElementById('m-rev').textContent = fmt(pRev);
+  document.getElementById('m-rev-sub').textContent =
+    Math.round(orders*days*m).toLocaleString() + ' orders × ' + fmt(aov);
+  document.getElementById('m-gp').textContent = fmt(pGP);
+  document.getElementById('m-gp-pct').textContent = gpMargin.toFixed(1) + '% gross margin';
+
+  const eEl = document.getElementById('m-ebitda');
+  eEl.textContent = fmt(pEBITDA);
+  eEl.className = 'mc-val ' + (pEBITDA >= 0 ? 'gn' : 'rd');
+  document.getElementById('m-ebitda-pct').textContent = ebitdaMargin.toFixed(1) + '% EBITDA margin';
+
+  const nEl = document.getElementById('m-net');
+  nEl.textContent = (pNet < 0 ? '−' : '') + fmt(Math.abs(pNet));
+  nEl.className = 'mc-val ' + (pNet >= 0 ? '' : 'rd');
+  document.getElementById('m-net-pct').textContent = netMargin.toFixed(1) + '% net margin';
+
+  // ── WATERFALL ──
+  const wMax = pRev || 1;
+  document.getElementById('w-rev').textContent = fmt(pRev);
+  document.getElementById('b-rev').style.width = '100%';
+  document.getElementById('w-cogs').textContent = '−' + fmt(pCOGS);
+  document.getElementById('b-cogs').style.width = bw(pCOGS, wMax);
+  document.getElementById('w-gp').textContent = fmt(pGP);
+  document.getElementById('b-gp').style.width = bw(pGP, wMax);
+  document.getElementById('w-opex').textContent = '−' + fmt(pOpEx);
+  document.getElementById('b-opex').style.width = bw(pOpEx, wMax);
+  document.getElementById('w-mkt').textContent = '−' + fmt(pMkt);
+  document.getElementById('b-mkt').style.width = bw(pMkt, wMax);
+
+  const weEl = document.getElementById('w-ebitda');
+  weEl.textContent = (pEBITDA < 0 ? '−' : '') + fmt(Math.abs(pEBITDA));
+  weEl.className = 'wf-amt ' + (pEBITDA >= 0 ? 'gn' : 'rd');
+  document.getElementById('b-ebitda').style.width = bw(Math.max(0, pEBITDA), wMax);
+
+  const dRow = document.getElementById('debt-wf-row');
+  if (debt > 0) {
+    dRow.style.display = 'flex';
+    document.getElementById('w-debt').textContent = '−' + fmt(pDebt);
+    document.getElementById('b-debt').style.width = bw(pDebt, wMax);
+  } else {
+    dRow.style.display = 'none';
+  }
+
+  const wnEl = document.getElementById('w-net');
+  wnEl.textContent = (pNet < 0 ? '−' : '') + fmt(Math.abs(pNet));
+  wnEl.className = 'wf-amt ' + (pNet >= 0 ? 'gn' : 'rd');
+  document.getElementById('b-net').style.width = bw(Math.max(0, pNet), wMax);
+
+  // ── SUMMARY TABLE ──
+  const rows = [
+    {l:'Gross Revenue', v:mRev, s:'b'},
+    {l:'Food Cost (COGS)', v:-mCOGS, s:'cg'},
+    {l:'Gross Profit', v:mGP, s:'gp'},
+    {l:'Fixed Operating Costs', v:-mOpEx, s:'op'},
+    {l:'Marketing Spend', v:-mktSpend, s:'op'},
+    {l:'EBITDA', v:mEBITDA, s:'eb'},
+    ...(debt>0 ? [{l:'Debt Service', v:-debt, s:'cg'}] : []),
+    {l:'Net Operating Income', v:mNet, s:'nt'},
+  ];
+  const sc = {b:'font-weight:700',cg:'color:var(--red)',gp:'font-weight:700;color:#3B82F6',
+    op:'color:var(--yellow)',eb:'font-weight:700;color:var(--green)',nt:'font-weight:700'};
+  document.getElementById('sum-tbody').innerHTML = rows.map(r => {
+    const pf = r.v < 0 ? '−' : '';
+    const a = Math.abs(r.v);
+    return `<tr><td style="${sc[r.s]||''}">${r.l}</td>
+      <td style="${sc[r.s]||''}">${pf}${fmt(a)}</td>
+      <td style="${sc[r.s]||''}">${pf}${fmt(a*3)}</td>
+      <td style="${sc[r.s]||''}">${pf}${fmt(a*12)}</td></tr>`;
+  }).join('');
+
+  // ── DECISION CARDS ──
+
+  // 1. Marketing spend
+  const mktCap = Math.min(mktPct, 15);
+  document.getElementById('g-mkt').style.width = (mktCap/15*100) + '%';
+  document.getElementById('d-mkt-val').textContent = mktPct.toFixed(1) + '% of revenue';
+  const dcMkt = document.getElementById('dc-mkt');
+  dcMkt.className = 'dc';
+  if (!mRev) { dcMkt.classList.add('nt'); document.getElementById('d-mkt-note').textContent = 'Enter revenue data above'; document.getElementById('g-mkt').style.background='var(--muted)'; }
+  else if (mktPct < 3) {
+    dcMkt.classList.add('wn'); document.getElementById('g-mkt').style.background='var(--yellow)';
+    document.getElementById('d-mkt-note').textContent = 'Below 3% — consider boosting spend to drive orders';
+  } else if (mktPct <= 10) {
+    dcMkt.classList.add('gd'); document.getElementById('g-mkt').style.background='var(--green)';
+    document.getElementById('d-mkt-note').textContent = 'Healthy range (5–10%) — keep optimizing creatives';
+  } else {
+    dcMkt.classList.add('wn'); document.getElementById('g-mkt').style.background='var(--red)';
+    document.getElementById('d-mkt-note').textContent = 'Above 10% — ensure ROI is tracking order growth';
+  }
+
+  // 2. Loan capacity — DSCR 1.25x, 3yr @12% p.a.
+  const r = 0.12/12, n = 36;
+  const availableForDebt = Math.max(0, mEBITDA);
+  const maxPayment = availableForDebt / 1.25 - debt;
+  const loanAmt = maxPayment > 0 ? maxPayment * ((1 - Math.pow(1+r,-n)) / r) : 0;
+  document.getElementById('d-loan-val').textContent = fmt(loanAmt);
+  const dcLoan = document.getElementById('dc-loan');
+  dcLoan.className = 'dc';
+  if (loanAmt <= 0) {
+    dcLoan.classList.add('bd'); document.getElementById('d-loan-note').textContent = 'EBITDA too low for new debt — improve margins first';
+  } else if (loanAmt < 50000) {
+    dcLoan.classList.add('wn'); document.getElementById('d-loan-note').textContent = 'Modest capacity · Try DTI Pondo sa Pagbabago';
+  } else {
+    dcLoan.classList.add('gd'); document.getElementById('d-loan-note').textContent = 'At DSCR 1.25× · 3yr term · 12% p.a.';
+  }
+
+  // 3. Scale readiness
+  const dcScale = document.getElementById('dc-scale');
+  dcScale.className = 'dc';
+  let sv, sn, sc2;
+  if (!mRev) { sv='—'; sn='Enter data to assess'; sc2='nt'; }
+  else if (ebitdaMargin >= 25) { sv='Ready to Scale'; sn='Strong margins — explore 2nd location or higher volume'; sc2='gd'; }
+  else if (ebitdaMargin >= 18) { sv='Borderline'; sn='Workable margins — reduce costs before scaling'; sc2='wn'; }
+  else if (ebitdaMargin >= 8) { sv='Not Yet'; sn='Too thin to absorb scale costs — optimize first'; sc2='bd'; }
+  else { sv='Unprofitable'; sn='Revisit pricing, food cost % or volume targets'; sc2='bd'; }
+  document.getElementById('d-scale-val').textContent = sv;
+  document.getElementById('d-scale-note').textContent = sn;
+  dcScale.classList.add(sc2);
+
+  // 4. Spare campaign budget
+  const reserve = Math.max(0, mEBITDA * 0.20);
+  const campaignBudget = Math.max(0, mEBITDA - debt - reserve);
+  document.getElementById('d-camp-val').textContent = fmt(campaignBudget);
+  const dcCamp = document.getElementById('dc-camp');
+  dcCamp.className = 'dc';
+  if (campaignBudget <= 0) {
+    dcCamp.classList.add('bd'); document.getElementById('d-camp-note').textContent = 'No surplus · Improve margins before spending more';
+  } else if (campaignBudget < 2500) {
+    dcCamp.classList.add('wn'); document.getElementById('d-camp-note').textContent = 'Small budget · Focus on organic (TikTok, FB Reels)';
+  } else {
+    dcCamp.classList.add('gd'); document.getElementById('d-camp-note').textContent = 'Available for boosted posts, promos, collabs';
+  }
+
+  // ── INSIGHTS ──
+  const ins = [];
+  if (mRev > 0) {
+    if (fcPct > 38) ins.push({i:'⚠️', t:`Food cost at <strong>${fcPct}%</strong> exceeds the 38% ceiling for street food. Review supplier pricing, portion control, or add higher-margin items like drinks.`});
+    if (ebitdaMargin < 15 && ebitdaMargin >= 0) ins.push({i:'📉', t:`EBITDA margin is <strong>${ebitdaMargin.toFixed(1)}%</strong> — below the healthy 15–20% floor for food operations. Focus on reducing food cost or increasing average order value.`});
+    if (ebitdaMargin < 0) ins.push({i:'🚨', t:`The business is currently <strong>operating at a loss</strong> (EBITDA: ${fmt(mEBITDA)}). Do not take loans or increase marketing until costs are under control.`});
+    if (mktPct < 3 && ebitdaMargin >= 15) ins.push({i:'📣', t:`Only <strong>${mktPct.toFixed(1)}%</strong> of revenue goes to marketing. Even ₱${fmt(mRev*0.05).replace('₱','')} in monthly boosted posts can lift daily orders by 10–20%.`});
+    if (ebitdaMargin >= 20) {
+      const extra = Math.min(campaignBudget * 0.5, mRev * 0.10 - mktSpend);
+      if (extra > 1000) ins.push({i:'✅', t:`You can safely add <strong>${fmt(extra)}/month</strong> to your marketing budget and stay within a healthy 10% spend ratio.`});
+    }
+    if (orders < 25) ins.push({i:'🛵', t:`At <strong>${Math.round(orders)} orders/day</strong>, consider listing on GrabFood or FoodPanda to unlock delivery volume without added staff costs.`});
+    if (ebitdaMargin >= 25) ins.push({i:'🚀', t:`Strong profitability at <strong>${ebitdaMargin.toFixed(1)}%</strong> EBITDA margin. This is a healthy food business ready to explore a 2nd stall, franchise model, or catering arm.`});
+    if (loanAmt >= 100000 && ebitdaMargin >= 20) ins.push({i:'🏦', t:`Your EBITDA supports a loan of up to <strong>${fmt(loanAmt)}</strong>. This can fund equipment, a new station, or a 2nd location.`});
+    if (debt > 0) {
+      const dscr = mEBITDA / debt;
+      if (dscr < 1.25) ins.push({i:'💳', t:`Current DSCR (debt coverage) is <strong>${dscr.toFixed(2)}×</strong> — below the 1.25× minimum banks require. Avoid new loans until EBITDA grows.`});
+    }
+  } else {
+    ins.push({i:'👆', t:'Adjust the inputs on the left to see your profitability analysis.'});
+  }
+  document.getElementById('insights').innerHTML = ins.map(x =>
+    `<div class="insight"><span class="insight-icon">${x.i}</span><span>${x.t}</span></div>`
+  ).join('');
+}
+
+calc();
+</script>
+</body>
+</html>
