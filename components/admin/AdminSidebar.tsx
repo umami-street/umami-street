@@ -14,6 +14,7 @@ import {
   MessageSquare,
   LogOut,
   ExternalLink,
+  TrendingUp,
 } from "lucide-react";
 
 const links = [
@@ -25,6 +26,10 @@ const links = [
   { href: "/admin/orders", label: "Orders", icon: ShoppingBag },
   { href: "/admin/catering", label: "Catering & Events", icon: CalendarDays },
   { href: "/admin/chat", label: "Live Chat", icon: MessageSquare },
+];
+
+const externalLinks = [
+  { href: "/calculator.html", label: "Profitability Calculator", icon: TrendingUp },
 ];
 
 export default function AdminSidebar() {
@@ -85,6 +90,17 @@ export default function AdminSidebar() {
 
       {/* Bottom */}
       <div className="p-4 border-t border-stone/20 space-y-2">
+        {externalLinks.map(({ href, label, icon: Icon }) => (
+          <Link
+            key={href}
+            href={href}
+            target="_blank"
+            className="flex items-center gap-3 px-4 py-3 text-sm text-stone hover:text-cream transition-colors"
+          >
+            <Icon size={17} />
+            {label}
+          </Link>
+        ))}
         <Link
           href="/"
           target="_blank"

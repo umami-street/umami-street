@@ -132,6 +132,7 @@ export default async function AdminDashboard() {
           { label: "Replace Site Images", href: "/admin/images" },
           { label: "View Orders", href: "/admin/orders" },
           { label: "View Website", href: "/" },
+          { label: "Profitability Calculator", href: "/calculator.html" },
         ].map(({ label, href }) => (
           <Link
             key={label}
