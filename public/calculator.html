@@ -112,8 +112,29 @@ body{background:var(--bg);color:var(--charcoal);font-family:'Inter',sans-serif;f
 .insight+.insight{margin-top:6px}
 .i-icon{font-size:14px;flex-shrink:0;margin-top:1px}
 
+/* Monthly tracker */
+.month-grid{display:grid;grid-template-columns:repeat(3,1fr) 110px;gap:8px;align-items:end}
+.month-sep{grid-column:1/-1;height:1px;background:var(--border);margin:4px 0}
+.month-cell{display:flex;flex-direction:column;gap:3px}
+.month-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.month-row-inner{display:flex;align-items:center;gap:3px}
+.mpfx{font-size:11px;color:var(--muted);font-weight:600;flex-shrink:0}
+.month-input{border:1px solid var(--border);padding:5px 7px;font-size:12px;font-weight:600;text-align:right;width:100%;font-family:'Inter',sans-serif;border-radius:2px;background:#FAFAF8;color:var(--muted);transition:border-color .15s}
+.month-input:focus{outline:none;border-color:var(--maroon);background:#fff;color:var(--charcoal)}
+.month-input.actual{border-color:var(--maroon);background:rgba(139,26,26,.04);color:var(--charcoal)}
+.qcol{background:var(--bg);border:1px solid var(--border);padding:8px 10px;display:flex;flex-direction:column;gap:2px}
+.qlbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--maroon)}
+.qrev{font-size:13px;font-weight:700;color:var(--charcoal);font-family:'Playfair Display',serif}
+.qnet{font-size:10px;color:var(--green);font-weight:600}
+.qsub{font-size:9px;color:var(--muted)}
+.ann-row{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--charcoal);margin-top:4px}
+.ann-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(245,240,232,.5)}
+.ann-block{text-align:right}
+.ann-val{font-size:16px;font-weight:700;color:var(--cream);font-family:'Playfair Display',serif}
+.ann-sub{font-size:10px;color:rgba(245,240,232,.4);margin-top:1px}
+
 @media(max-width:900px){.layout{grid-template-columns:1fr;padding:14px 16px}.header{padding:14px 16px}.period-wrap{flex-wrap:wrap}}
-@media(max-width:460px){.metric-grid,.dec-grid{grid-template-columns:1fr}.field-input{width:100px}}
+@media(max-width:460px){.metric-grid,.dec-grid{grid-template-columns:1fr}.field-input{width:100px}.month-grid{grid-template-columns:repeat(3,1fr);}.qcol{display:none}}
 </style>
 </head>
 <body>
@@ -386,9 +407,49 @@ body{background:var(--bg);color:var(--charcoal);font-family:'Inter',sans-serif;f
       </table>
     </div>
 
+    <!-- Monthly Tracker -->
+    <div class="card">
+      <div class="card-title">Monthly Revenue Tracker — Enter actual months you have data for</div>
+      <p style="font-size:11px;color:var(--muted);margin-bottom:12px">Blank months are projected from your main revenue above. Q1–Q4 and Annual update automatically.</p>
+      <div class="month-grid">
+
+        <div class="month-cell"><div class="month-lbl">January</div><div class="month-row-inner"><span class="mpfx">₱</span><input class="month-input" id="m01" type="number" min="0" placeholder="—" oninput="calc()"></div></div>
+        <div class="month-cell"><div class="month-lbl">February</div><div class="month-row-inner"><span class="mpfx">₱</span><input class="month-input" id="m02" type="number" min="0" placeholder="—" oninput="calc()"></div></div>
+        <div class="month-cell"><div class="month-lbl">March</div><div class="month-row-inner"><span class="mpfx">₱</span><input class="month-input" id="m03" type="number" min="0" placeholder="—" oninput="calc()"></div></div>
+        <div class="qcol"><div class="qlbl">Q1 Revenue</div><div class="qrev" id="qt1r">₱0</div><div class="qnet" id="qt1n">Net ₱0</div><div class="qsub" id="qt1s"></div></div>
+
+        <div class="month-sep"></div>
+
+        <div class="month-cell"><div class="month-lbl">April</div><div class="month-row-inner"><span class="mpfx">₱</span><input class="month-input" id="m04" type="number" min="0" placeholder="—" oninput="calc()"></div></div>
+        <div class="month-cell"><div class="month-lbl">May</div><div class="month-row-inner"><span class="mpfx">₱</span><input class="month-input" id="m05" type="number" min="0" placeholder="—" oninput="calc()"></div></div>
+        <div class="month-cell"><div class="month-lbl">June</div><div class="month-row-inner"><span class="mpfx">₱</span><input class="month-input" id="m06" type="number" min="0" placeholder="—" oninput="calc()"></div></div>
+        <div class="qcol"><div class="qlbl">Q2 Revenue</div><div class="qrev" id="qt2r">₱0</div><div class="qnet" id="qt2n">Net ₱0</div><div class="qsub" id="qt2s"></div></div>
+
+        <div class="month-sep"></div>
+
+        <div class="month-cell"><div class="month-lbl">July</div><div class="month-row-inner"><span class="mpfx">₱</span><input class="month-input" id="m07" type="number" min="0" placeholder="—" oninput="calc()"></div></div>
+        <div class="month-cell"><div class="month-lbl">August</div><div class="month-row-inner"><span class="mpfx">₱</span><input class="month-input" id="m08" type="number" min="0" placeholder="—" oninput="calc()"></div></div>
+        <div class="month-cell"><div class="month-lbl">September</div><div class="month-row-inner"><span class="mpfx">₱</span><input class="month-input" id="m09" type="number" min="0" placeholder="—" oninput="calc()"></div></div>
+        <div class="qcol"><div class="qlbl">Q3 Revenue</div><div class="qrev" id="qt3r">₱0</div><div class="qnet" id="qt3n">Net ₱0</div><div class="qsub" id="qt3s"></div></div>
+
+        <div class="month-sep"></div>
+
+        <div class="month-cell"><div class="month-lbl">October</div><div class="month-row-inner"><span class="mpfx">₱</span><input class="month-input" id="m10" type="number" min="0" placeholder="—" oninput="calc()"></div></div>
+        <div class="month-cell"><div class="month-lbl">November</div><div class="month-row-inner"><span class="mpfx">₱</span><input class="month-input" id="m11" type="number" min="0" placeholder="—" oninput="calc()"></div></div>
+        <div class="month-cell"><div class="month-lbl">December</div><div class="month-row-inner"><span class="mpfx">₱</span><input class="month-input" id="m12" type="number" min="0" placeholder="—" oninput="calc()"></div></div>
+        <div class="qcol"><div class="qlbl">Q4 Revenue</div><div class="qrev" id="qt4r">₱0</div><div class="qnet" id="qt4n">Net ₱0</div><div class="qsub" id="qt4s"></div></div>
+
+        <div class="ann-row">
+          <div><div class="ann-lbl">Annual Revenue</div><div class="ann-sub" id="ann-cnt"></div></div>
+          <div class="ann-block"><div class="ann-val" id="ann-rev">₱0</div><div class="ann-sub" id="ann-net"></div></div>
+        </div>
+
+      </div>
+    </div>
+
     <!-- Decision Dashboard -->
     <div class="card">
-      <div class="card-title">Business Decision Dashboard</div>
+      <div class="card-title">Business Decision Dashboard — Check before you act</div>
       <div class="dec-grid">
 
         <div class="dc nt" id="dc-mkt">
@@ -423,6 +484,34 @@ body{background:var(--bg);color:var(--charcoal);font-family:'Inter',sans-serif;f
           <div class="dc-note" id="d-camp-note">After 20% cash reserve</div>
         </div>
 
+        <div class="dc nt" id="dc-hire">
+          <div class="dc-icon">👷</div>
+          <div class="dc-lbl">Hire One More Staff?</div>
+          <div class="dc-val" id="d-hire-val">—</div>
+          <div class="dc-note" id="d-hire-note">+₱16,770/mo · PH min. wage</div>
+        </div>
+
+        <div class="dc nt" id="dc-promo">
+          <div class="dc-icon">🏷️</div>
+          <div class="dc-lbl">Run a 10% Discount?</div>
+          <div class="dc-val" id="d-promo-val">—</div>
+          <div class="dc-note" id="d-promo-note">Impact on net income</div>
+        </div>
+
+        <div class="dc nt" id="dc-deliv">
+          <div class="dc-icon">🛵</div>
+          <div class="dc-lbl">Join Grab / FoodPanda?</div>
+          <div class="dc-val" id="d-deliv-val">—</div>
+          <div class="dc-note" id="d-deliv-note">At 28% platform commission</div>
+        </div>
+
+        <div class="dc nt" id="dc-bulk">
+          <div class="dc-icon">📦</div>
+          <div class="dc-lbl">Bulk Buy Inventory (3 mo)?</div>
+          <div class="dc-val" id="d-bulk-val">—</div>
+          <div class="dc-note" id="d-bulk-note">Cash flow safety check</div>
+        </div>
+
       </div>
     </div>
 
@@ -437,8 +526,7 @@ body{background:var(--bg);color:var(--charcoal);font-family:'Inter',sans-serif;f
 
 <script>
 let period = 'monthly';
-const mul = {monthly:1, quarterly:3, yearly:12};
-const lbl = {monthly:'Monthly', quarterly:'Quarterly (3 mo)', yearly:'Yearly'};
+const lbl = {monthly:'Monthly', quarterly:'Quarterly', yearly:'Annual'};
 
 function setPeriod(p, btn) {
   period = p;
@@ -453,11 +541,24 @@ function fmt(n) {
   if (a >= 1000) return '₱' + a.toLocaleString('en-PH');
   return '₱' + a;
 }
-function pct(a, b) { return b ? (a / b * 100) : 0; }
+function sgn(v) { return v < 0 ? '−' : ''; }
+function pct(a,b) { return b ? a/b*100 : 0; }
 function g(id) { return parseFloat(document.getElementById(id).value) || 0; }
-function set(id, v) { document.getElementById(id).textContent = v; }
+function set(id, v) { const el = document.getElementById(id); if (el) el.textContent = v; }
+function dc(id, cls) { const el = document.getElementById(id); el.className = 'dc ' + cls; }
+
+function qPL(rev, months, cogsRatio, mOpEx, mkt, debt) {
+  const cogs    = rev * cogsRatio;
+  const gp      = rev - cogs;
+  const opex    = mOpEx * months;
+  const mktT    = mkt * months;
+  const ebitda  = gp - opex - mktT;
+  const net     = ebitda - debt * months;
+  return { rev, cogs, gp, opex, mktT, ebitda, net };
+}
 
 function calc() {
+  // ── MAIN MONTHLY INPUTS ──
   const mRev     = g('rev');
   const inv      = g('inv');
   const pack     = g('pack');
@@ -476,161 +577,268 @@ function calc() {
   const mOpEx   = labor + rent + util + other;
   const mEBITDA = mGP - mOpEx - mkt;
   const mNet    = mEBITDA - debt;
-
   const gpM     = pct(mGP, mRev);
   const eM      = pct(mEBITDA, mRev);
-  const nM      = pct(mNet, mRev);
   const mktPct  = pct(mkt, mRev);
+  const cogsRatio = mRev > 0 ? mCOGS / mRev : 0;
 
-  const m = mul[period];
-  const pRev    = mRev * m;
-  const pGP     = mGP * m;
-  const pEBITDA = mEBITDA * m;
-  const pNet    = mNet * m;
+  // ── MONTHLY TRACKER ──
+  const months = Array.from({length:12}, (_,i) => {
+    const id = 'm' + String(i+1).padStart(2,'0');
+    const el = document.getElementById(id);
+    const v = parseFloat(el.value);
+    const hasData = !isNaN(v) && v > 0;
+    el.classList.toggle('actual', hasData);
+    return hasData ? v : mRev;
+  });
 
-  // Inline form calcs
-  set('c-cogs',     fmt(mCOGS));
-  set('c-cogs-pct', pct(mCOGS, mRev).toFixed(1) + '% of rev');
-  set('c-gp',       (mGP < 0 ? '−' : '') + fmt(Math.abs(mGP)));
-  set('c-gp-pct',   gpM.toFixed(1) + '%');
-  set('c-opex',     fmt(mOpEx));
-  set('c-mkt',      fmt(mkt));
-  set('c-mkt-pct',  pct(mkt, mRev).toFixed(1) + '% of rev');
-  set('c-ebitda',   (mEBITDA < 0 ? '−' : '') + fmt(Math.abs(mEBITDA)));
-  set('c-ebitda-pct', eM.toFixed(1) + '%');
-  set('c-net',      (mNet < 0 ? '−' : '') + fmt(Math.abs(mNet)));
+  // Quarter sums and actuals count
+  const qRevs = [0,1,2,3].map(q => months.slice(q*3,q*3+3).reduce((a,b)=>a+b,0));
+  const annRev = months.reduce((a,b)=>a+b,0);
+  const qAct  = [0,1,2,3].map(q => [0,1,2].filter(i => {
+    const id = 'm' + String(q*3+i+1).padStart(2,'0');
+    const v = parseFloat(document.getElementById(id).value);
+    return !isNaN(v) && v > 0;
+  }).length);
+  const totalAct = months.filter((_,i) => {
+    const id = 'm' + String(i+1).padStart(2,'0');
+    const v = parseFloat(document.getElementById(id).value);
+    return !isNaN(v) && v > 0;
+  }).length;
 
-  // Period header
-  set('results-title', lbl[period] + ' Financial Summary');
-  set('ebitda-lbl', lbl[period] + ' EBITDA');
+  // Quarter P&L
+  const qPLs = [0,1,2,3].map(qi => qPL(qRevs[qi], 3, cogsRatio, mOpEx, mkt, debt));
+  const annPL = qPL(annRev, 12, cogsRatio, mOpEx, mkt, debt);
 
-  // Big 4
-  set('m-rev', fmt(pRev));
-  set('m-rev-sub', period === 'monthly' ? 'this month' : (period === 'quarterly' ? '3-month total' : '12-month total'));
-  set('m-gp', fmt(pGP));
-  set('m-gp-pct', gpM.toFixed(1) + '% gross margin');
+  // Update tracker UI
+  ['1','2','3','4'].forEach((q,qi) => {
+    set('qt'+q+'r', fmt(qRevs[qi]));
+    set('qt'+q+'n', 'Net ' + sgn(qPLs[qi].net) + fmt(Math.abs(qPLs[qi].net)));
+    set('qt'+q+'s', qAct[qi]+' actual · '+(3-qAct[qi])+' proj.');
+    document.getElementById('qt'+q+'n').style.color = qPLs[qi].net >= 0 ? 'var(--green)' : 'var(--red)';
+  });
+  set('ann-rev', fmt(annRev));
+  set('ann-net', 'Net ' + sgn(annPL.net) + fmt(Math.abs(annPL.net)));
+  set('ann-cnt', totalAct + ' months with actual data · ' + (12-totalAct) + ' projected');
 
+  // ── PERIOD SELECTION ──
+  // Pick display P&L based on period toggle
+  let dRev, dGP, dEBITDA, dNet, dMul, dLabel;
+  if (period === 'monthly') {
+    dRev=mRev; dGP=mGP; dEBITDA=mEBITDA; dNet=mNet; dMul=1; dLabel='Monthly';
+  } else if (period === 'quarterly') {
+    // Use Q1 from tracker (or project if no data)
+    dRev=qRevs[0]; dGP=qPLs[0].gp; dEBITDA=qPLs[0].ebitda; dNet=qPLs[0].net; dMul=3; dLabel='Q1 Total';
+  } else {
+    dRev=annRev; dGP=annPL.gp; dEBITDA=annPL.ebitda; dNet=annPL.net; dMul=12; dLabel='Annual Total';
+  }
+
+  // ── LEFT SIDE INLINE CALCS ──
+  set('c-cogs',      fmt(mCOGS));
+  set('c-cogs-pct',  pct(mCOGS,mRev).toFixed(1) + '% of rev');
+  set('c-gp',        sgn(mGP) + fmt(Math.abs(mGP)));
+  set('c-gp-pct',    gpM.toFixed(1) + '%');
+  set('c-opex',      fmt(mOpEx));
+  set('c-mkt',       fmt(mkt));
+  set('c-mkt-pct',   pct(mkt,mRev).toFixed(1) + '% of rev');
+  set('c-ebitda',    sgn(mEBITDA) + fmt(Math.abs(mEBITDA)));
+  set('c-ebitda-pct',eM.toFixed(1) + '%');
+  set('c-net',       sgn(mNet) + fmt(Math.abs(mNet)));
+
+  // ── BIG 4 ──
+  set('results-title', dLabel + ' Financial Summary');
+  set('ebitda-lbl',    dLabel + ' EBITDA');
+  set('m-rev',  fmt(dRev));
+  set('m-rev-sub', period==='monthly'?'this month':(period==='quarterly'?'Q1 Jan–Mar':'all 12 months'));
+  set('m-gp',   fmt(dGP));
+  set('m-gp-pct', pct(dGP,dRev).toFixed(1) + '% gross margin');
   const eEl = document.getElementById('m-ebitda');
-  eEl.textContent = (pEBITDA < 0 ? '−' : '') + fmt(Math.abs(pEBITDA));
-  eEl.className = 'mc-val ' + (pEBITDA >= 0 ? 'gn' : 'rd');
-  set('m-ebitda-pct', eM.toFixed(1) + '% EBITDA margin');
-
+  eEl.textContent = sgn(dEBITDA) + fmt(Math.abs(dEBITDA));
+  eEl.className = 'mc-val ' + (dEBITDA >= 0 ? 'gn' : 'rd');
+  set('m-ebitda-pct', pct(dEBITDA,dRev).toFixed(1) + '% EBITDA margin');
   const nEl = document.getElementById('m-net');
-  nEl.textContent = (pNet < 0 ? '−' : '') + fmt(Math.abs(pNet));
-  nEl.className = 'mc-val ' + (pNet >= 0 ? '' : 'rd');
-  set('m-net-pct', nM.toFixed(1) + '% net margin');
+  nEl.textContent = sgn(dNet) + fmt(Math.abs(dNet));
+  nEl.className = 'mc-val ' + (dNet >= 0 ? '' : 'rd');
+  set('m-net-pct', pct(dNet,dRev).toFixed(1) + '% net margin');
 
-  // Summary table
+  // ── P&L TABLE — Monthly / Q1 Actual / Annual Actual ──
+  const q1 = qPLs[0], ann = annPL;
   const sc = {b:'font-weight:700',cg:'color:var(--red)',sub:'color:var(--red);padding-left:14px;font-size:11px',gp:'font-weight:700;color:#2563EB',op:'color:var(--yellow)',sub2:'color:var(--yellow);padding-left:14px;font-size:11px',eb:'font-weight:700;color:var(--green)',nt:'font-weight:700'};
-  const rows = [
-    {l:'Gross Revenue',              v: mRev,    s:'b'},
-    {l:'( − ) COGS',                 v:-mCOGS,   s:'cg'},
-    {l:'↳ Inventory / Ingredients',  v:-inv,     s:'sub'},
-    {l:'↳ Packaging & Consumables',  v:-pack,    s:'sub'},
-    {l:'Gross Profit',               v: mGP,     s:'gp'},
-    {l:'( − ) Operating Costs',      v:-mOpEx,   s:'op'},
-    {l:'↳ Labor / Wages',            v:-labor,   s:'sub2'},
-    {l:'↳ Rent / Stall Fee',         v:-rent,    s:'sub2'},
-    {l:'↳ Utilities',                v:-util,    s:'sub2'},
-    ...(other > 0 ? [{l:'↳ Other Costs', v:-other, s:'sub2'}] : []),
-    {l:'( − ) Marketing',            v:-mkt,     s:'op'},
-    {l:'↳ Paid Ads',                 v:-mktAds,  s:'sub2'},
-    ...(mktPromo > 0 ? [{l:'↳ Promos & Discounts', v:-mktPromo, s:'sub2'}] : []),
-    ...(mktOther > 0 ? [{l:'↳ Collabs & Other',    v:-mktOther, s:'sub2'}] : []),
-    {l:'EBITDA',                     v: mEBITDA, s:'eb'},
-    ...(debt > 0 ? [{l:'( − ) Debt Service',       v:-debt,    s:'cg'}] : []),
-    {l:'Net Operating Income',       v: mNet,    s:'nt'},
-  ];
-  document.getElementById('sum-tbody').innerHTML = rows.map(r => {
-    const pf = r.v < 0 ? '−' : '';
-    const a = Math.abs(r.v);
-    return `<tr><td style="${sc[r.s]||''}">${r.l}</td>
-      <td style="${sc[r.s]||''}">${pf}${fmt(a)}</td>
-      <td style="${sc[r.s]||''}">${pf}${fmt(a*3)}</td>
-      <td style="${sc[r.s]||''}">${pf}${fmt(a*12)}</td></tr>`;
-  }).join('');
 
-  // Marketing gauge
+  function tRow(label, mo, q1v, annv, s) {
+    const p0 = mo < 0 ? '−' : '', p1 = q1v < 0 ? '−' : '', p2 = annv < 0 ? '−' : '';
+    return `<tr>
+      <td style="${sc[s]||''}">${label}</td>
+      <td style="${sc[s]||''}">${p0}${fmt(Math.abs(mo))}</td>
+      <td style="${sc[s]||''}">${p1}${fmt(Math.abs(q1v))}</td>
+      <td style="${sc[s]||''}">${p2}${fmt(Math.abs(annv))}</td></tr>`;
+  }
+
+  // Update table headers to reflect tracker
+  document.getElementById('sum-tbody').previousElementSibling.innerHTML =
+    `<tr><th style="text-align:left">Line Item</th><th>Monthly</th><th>Q1 Actual</th><th>Annual</th></tr>`;
+
+  document.getElementById('sum-tbody').innerHTML = [
+    tRow('Gross Revenue',             mRev,     q1.rev,         ann.rev,         'b'),
+    tRow('( − ) COGS',               -mCOGS,  -q1.cogs,       -ann.cogs,        'cg'),
+    tRow('↳ Inventory / Ingredients',-inv,     -inv*3*cogsRatio||(-inv*3), -inv*12*cogsRatio||(-inv*12), 'sub'),
+    tRow('↳ Packaging & Consumables',-pack,    -pack*3,        -pack*12,         'sub'),
+    tRow('Gross Profit',              mGP,      q1.gp,          ann.gp,          'gp'),
+    tRow('( − ) Operating Costs',    -mOpEx,  -q1.opex,       -ann.opex,        'op'),
+    tRow('↳ Labor / Wages',          -labor,  -labor*3,       -labor*12,        'sub2'),
+    tRow('↳ Rent / Stall Fee',       -rent,   -rent*3,        -rent*12,         'sub2'),
+    tRow('↳ Utilities',              -util,   -util*3,        -util*12,         'sub2'),
+    ...(other>0?[tRow('↳ Other Costs',-other,-other*3,-other*12,'sub2')]:[]),
+    tRow('( − ) Marketing',          -mkt,    -q1.mktT,       -ann.mktT,        'op'),
+    tRow('↳ Paid Ads',               -mktAds, -mktAds*3,      -mktAds*12,       'sub2'),
+    ...(mktPromo>0?[tRow('↳ Promos & Discounts',-mktPromo,-mktPromo*3,-mktPromo*12,'sub2')]:[]),
+    ...(mktOther>0?[tRow('↳ Collabs & Other',-mktOther,-mktOther*3,-mktOther*12,'sub2')]:[]),
+    tRow('EBITDA',                    mEBITDA,  q1.ebitda,      ann.ebitda,      'eb'),
+    ...(debt>0?[tRow('( − ) Debt Service',-debt,-debt*3,-debt*12,'cg')]:[]),
+    tRow('Net Operating Income',      mNet,     q1.net,         ann.net,         'nt'),
+  ].join('');
+
+  // ── DECISION CARDS ──
+
+  // 1. Marketing Spend
   const mktCap = Math.min(mktPct, 15);
-  document.getElementById('g-mkt').style.width = (mktCap / 15 * 100) + '%';
+  document.getElementById('g-mkt').style.width = (mktCap/15*100) + '%';
   set('d-mkt-val', mktPct.toFixed(1) + '% of revenue');
-  const dcMkt = document.getElementById('dc-mkt');
-  dcMkt.className = 'dc';
   if (!mRev) {
-    dcMkt.classList.add('nt'); set('d-mkt-note', 'Enter revenue data on the left');
+    dc('dc-mkt','nt'); set('d-mkt-note','Enter revenue data on the left');
     document.getElementById('g-mkt').style.background = 'var(--muted)';
   } else if (mktPct < 3) {
-    dcMkt.classList.add('wn'); document.getElementById('g-mkt').style.background = 'var(--yellow)';
-    set('d-mkt-note', 'Below 3% — consider increasing spend to drive orders');
+    dc('dc-mkt','wn'); document.getElementById('g-mkt').style.background='var(--yellow)';
+    set('d-mkt-note','Below 3% — consider increasing spend to drive orders');
   } else if (mktPct <= 10) {
-    dcMkt.classList.add('gd'); document.getElementById('g-mkt').style.background = 'var(--green)';
-    set('d-mkt-note', 'Healthy range (5–10%) — keep optimizing your creatives');
+    dc('dc-mkt','gd'); document.getElementById('g-mkt').style.background='var(--green)';
+    set('d-mkt-note','Healthy range (5–10%) — keep optimizing your creatives');
   } else {
-    dcMkt.classList.add('wn'); document.getElementById('g-mkt').style.background = 'var(--red)';
-    set('d-mkt-note', 'Above 10% — make sure ROI is tracking order growth');
+    dc('dc-mkt','wn'); document.getElementById('g-mkt').style.background='var(--red)';
+    set('d-mkt-note','Above 10% — make sure ROI is tracking order growth');
   }
 
-  // Loan capacity
-  const r = 0.12 / 12, n = 36;
-  const maxPay = Math.max(0, mEBITDA) / 1.25 - debt;
-  const loanAmt = maxPay > 0 ? maxPay * ((1 - Math.pow(1 + r, -n)) / r) : 0;
+  // 2. Loan capacity
+  const lr = 0.12/12, ln = 36;
+  const maxPay = Math.max(0, mEBITDA)/1.25 - debt;
+  const loanAmt = maxPay > 0 ? maxPay*((1-Math.pow(1+lr,-ln))/lr) : 0;
   set('d-loan-val', fmt(loanAmt));
-  const dcLoan = document.getElementById('dc-loan');
-  dcLoan.className = 'dc';
   if (loanAmt <= 0) {
-    dcLoan.classList.add('bd'); set('d-loan-note', 'EBITDA too low for new debt — improve margins first');
+    dc('dc-loan','bd'); set('d-loan-note','EBITDA too low for new debt — improve margins first');
   } else if (loanAmt < 50000) {
-    dcLoan.classList.add('wn'); set('d-loan-note', 'Modest capacity · Try DTI Pondo sa Pagbabago');
+    dc('dc-loan','wn'); set('d-loan-note','Modest capacity · Try DTI Pondo sa Pagbabago');
   } else {
-    dcLoan.classList.add('gd'); set('d-loan-note', 'At DSCR 1.25× · 3yr term · 12% p.a.');
+    dc('dc-loan','gd'); set('d-loan-note','At DSCR 1.25× · 3yr term · 12% p.a.');
   }
 
-  // Scale readiness
-  const dcScale = document.getElementById('dc-scale');
-  dcScale.className = 'dc';
+  // 3. Scale readiness
   if (!mRev) {
-    dcScale.classList.add('nt'); set('d-scale-val','—'); set('d-scale-note','Enter data to assess');
+    dc('dc-scale','nt'); set('d-scale-val','—'); set('d-scale-note','Enter data to assess');
   } else if (eM >= 25) {
-    dcScale.classList.add('gd'); set('d-scale-val','Ready to Scale'); set('d-scale-note','Strong margins — explore 2nd location or higher volume');
+    dc('dc-scale','gd'); set('d-scale-val','Ready to Scale'); set('d-scale-note','Strong margins — explore 2nd location or higher volume');
   } else if (eM >= 18) {
-    dcScale.classList.add('wn'); set('d-scale-val','Borderline'); set('d-scale-note','Workable margins — reduce costs before scaling');
+    dc('dc-scale','wn'); set('d-scale-val','Borderline'); set('d-scale-note','Workable margins — reduce costs before scaling');
   } else if (eM >= 8) {
-    dcScale.classList.add('bd'); set('d-scale-val','Not Yet'); set('d-scale-note','Too thin to absorb scale costs — optimize first');
+    dc('dc-scale','bd'); set('d-scale-val','Not Yet'); set('d-scale-note','Too thin to absorb scale costs — optimize first');
   } else {
-    dcScale.classList.add('bd'); set('d-scale-val','Unprofitable'); set('d-scale-note','Revisit pricing, food cost % or volume targets');
+    dc('dc-scale','bd'); set('d-scale-val','Unprofitable'); set('d-scale-note','Revisit pricing, COGS or volume targets');
   }
 
-  // Campaign budget
-  const reserve = Math.max(0, mEBITDA * 0.20);
+  // 4. Spare campaign budget
+  const reserve = Math.max(0, mEBITDA*0.20);
   const campBudget = Math.max(0, mEBITDA - debt - reserve);
   set('d-camp-val', fmt(campBudget));
-  const dcCamp = document.getElementById('dc-camp');
-  dcCamp.className = 'dc';
   if (campBudget <= 0) {
-    dcCamp.classList.add('bd'); set('d-camp-note','No surplus · Improve margins before spending more');
+    dc('dc-camp','bd'); set('d-camp-note','No surplus · Improve margins before spending more');
   } else if (campBudget < 2500) {
-    dcCamp.classList.add('wn'); set('d-camp-note','Small budget · Focus on organic (TikTok, FB Reels)');
+    dc('dc-camp','wn'); set('d-camp-note','Small budget · Focus on organic (TikTok, FB Reels)');
   } else {
-    dcCamp.classList.add('gd'); set('d-camp-note','Available for boosted posts, promos, collabs');
+    dc('dc-camp','gd'); set('d-camp-note','Available for boosted posts, promos, collabs');
   }
 
-  // Insights
+  // 5. Hire one more staff?
+  // Philippine min. wage NCR ≈ ₱645/day × 26 days = ₱16,770/month
+  const addStaff = 16770;
+  const newLaborPct = pct(labor + addStaff, mGP);
+  const hireNet = mNet - addStaff;
+  set('d-hire-val', newLaborPct.toFixed(1) + '% of GP');
+  if (!mRev) {
+    dc('dc-hire','nt'); set('d-hire-note','Enter data to assess');
+  } else if (hireNet < 0) {
+    dc('dc-hire','bd'); set('d-hire-note','Adding ₱16,770/mo staff would put you at a loss of ' + fmt(Math.abs(hireNet)));
+  } else if (newLaborPct > 45) {
+    dc('dc-hire','wn'); set('d-hire-note','Labor would be ' + newLaborPct.toFixed(0) + '% of GP — tight. Net income drops to ' + fmt(hireNet));
+  } else {
+    dc('dc-hire','gd'); set('d-hire-note','Affordable. Net income after hire: ' + fmt(hireNet) + '/mo');
+  }
+
+  // 6. Run a 10% discount?
+  // Same volume, 10% lower price → revenue drops 10%, COGS (absolute) stays same
+  const promoRev   = mRev * 0.90;
+  const promoGP    = promoRev - mCOGS;
+  const promoEBITDA = promoGP - mOpEx - mkt;
+  const promoNet   = promoEBITDA - debt;
+  const profitDrop = mNet - promoNet;
+  set('d-promo-val', sgn(promoNet) + fmt(Math.abs(promoNet)) + '/mo');
+  if (!mRev) {
+    dc('dc-promo','nt'); set('d-promo-note','Enter data to assess');
+  } else if (promoNet < 0) {
+    dc('dc-promo','bd'); set('d-promo-note','This promo puts you at a loss. You need at least ' + fmt(mCOGS + mOpEx + mkt) + ' in revenue to break even.');
+  } else if (pct(promoEBITDA, promoRev) < 10) {
+    dc('dc-promo','wn'); set('d-promo-note','Profit drops by ' + fmt(profitDrop) + '. Very thin margin — only do this with a volume push.');
+  } else {
+    dc('dc-promo','gd'); set('d-promo-note','Still profitable at ' + fmt(promoNet) + '/mo. Promo is feasible if it drives more orders.');
+  }
+
+  // 7. Join Grab / FoodPanda?
+  // Platform takes 28% commission. Delivery orders' effective revenue = 72% of face value.
+  // Break-even: your EBITDA margin must exceed 28% for delivery to be profitable.
+  const delivMargin = eM - 28;
+  set('d-deliv-val', delivMargin >= 0 ? '+' + delivMargin.toFixed(1) + '% left' : delivMargin.toFixed(1) + '% short');
+  if (!mRev) {
+    dc('dc-deliv','nt'); set('d-deliv-note','Enter data to assess');
+  } else if (delivMargin >= 10) {
+    dc('dc-deliv','gd'); set('d-deliv-note','Your ' + eM.toFixed(1) + '% EBITDA margin can absorb the 28% commission. Delivery is profitable.');
+  } else if (delivMargin >= 0) {
+    dc('dc-deliv','wn'); set('d-deliv-note','Marginal. Delivery orders may break even but add workload. Need stronger margins first.');
+  } else {
+    dc('dc-deliv','bd'); set('d-deliv-note','At ' + eM.toFixed(1) + '% EBITDA, delivery orders will operate at a loss per order after commission.');
+  }
+
+  // 8. Bulk buy inventory (3 months)?
+  const bulkCost = inv * 3;
+  const monthsCovered = mNet > 0 ? (mNet / inv).toFixed(1) : 0;
+  set('d-bulk-val', fmt(bulkCost));
+  if (!mRev || inv === 0) {
+    dc('dc-bulk','nt'); set('d-bulk-note','Enter inventory cost to assess');
+  } else if (mNet >= bulkCost) {
+    dc('dc-bulk','gd'); set('d-bulk-note','Safe. Net income (' + fmt(mNet) + '/mo) covers 3-month stock. No cash crunch risk.');
+  } else if (mNet >= inv * 1.5) {
+    dc('dc-bulk','wn'); set('d-bulk-note','Manageable but tight. Net income covers ' + monthsCovered + 'mo of stock. Consider buying 1.5× instead.');
+  } else {
+    dc('dc-bulk','bd'); set('d-bulk-note','Risk of cash crunch. Net income only covers ' + monthsCovered + 'mo of stock. Buy monthly for now.');
+  }
+
+  // ── INSIGHTS ──
+  const cogsPct = pct(mCOGS, mRev);
   const ins = [];
   if (mRev > 0) {
-    if (fcPct > 38) ins.push({i:'⚠️', t:`Food cost at <strong>${fcPct}%</strong> exceeds the 38% ceiling for street food. Review your supplier pricing, portion sizes, or add higher-margin items like drinks.`});
+    if (cogsPct > 40) ins.push({i:'⚠️', t:`COGS is <strong>${cogsPct.toFixed(1)}%</strong> of revenue — above 40%, which is high for street food. Review your ingredient sourcing, portion sizes, or pricing.`});
     if (eM < 0) ins.push({i:'🚨', t:`The business is currently <strong>operating at a loss</strong>. Do not take on new loans or increase marketing spend until costs are brought under control.`});
-    else if (eM < 15) ins.push({i:'📉', t:`EBITDA margin is <strong>${eM.toFixed(1)}%</strong> — below the healthy 15–20% floor for food operations. Focus on reducing food cost or increasing your average order value.`});
-    if (mktPct < 3 && eM >= 15) ins.push({i:'📣', t:`Only <strong>${mktPct.toFixed(1)}%</strong> of revenue goes to marketing. Even ₱${fmt(mRev * 0.05).replace('₱','')} in monthly boosted posts can lift daily orders by 10–20%.`});
-    if (eM >= 20) {
-      const extra = Math.min(campBudget * 0.5, mRev * 0.10 - mkt);
-      if (extra > 1000) ins.push({i:'✅', t:`You can safely add <strong>${fmt(extra)}/month</strong> to your marketing budget and stay within a healthy 10% spend ratio.`});
-    }
-    if (orders < 25) ins.push({i:'🛵', t:`At <strong>${Math.round(orders)} orders/day</strong>, consider listing on GrabFood or FoodPanda to unlock delivery volume without added staff.`});
-    if (eM >= 25) ins.push({i:'🚀', t:`Strong profitability at <strong>${eM.toFixed(1)}%</strong> EBITDA margin. This business is ready to explore a 2nd stall, franchise model, or catering arm.`});
-    if (loanAmt >= 100000 && eM >= 20) ins.push({i:'🏦', t:`Your EBITDA supports a loan of up to <strong>${fmt(loanAmt)}</strong>. This can fund equipment, a new station, or a 2nd location.`});
+    else if (eM < 15) ins.push({i:'📉', t:`EBITDA margin is <strong>${eM.toFixed(1)}%</strong> — below the healthy 15–20% floor for food operations. Focus on reducing COGS or boosting revenue.`});
+    if (mktPct < 3 && eM >= 15) ins.push({i:'📣', t:`Only <strong>${mktPct.toFixed(1)}%</strong> of revenue goes to marketing. Even <strong>${fmt(mRev*0.05)}/month</strong> in boosted posts can lift orders by 10–20%.`});
+    if (eM >= 20 && campBudget > 1000) ins.push({i:'✅', t:`You have <strong>${fmt(campBudget)}/month</strong> in spare campaign budget after keeping a 20% cash reserve. Consider a push campaign this month.`});
+    if (eM >= 25) ins.push({i:'🚀', t:`Strong <strong>${eM.toFixed(1)}%</strong> EBITDA margin. The business is ready to explore a 2nd stall, franchise model, or catering arm.`});
+    if (loanAmt >= 100000 && eM >= 20) ins.push({i:'🏦', t:`Your EBITDA supports a loan of up to <strong>${fmt(loanAmt)}</strong> for equipment, a new station, or a 2nd location.`});
     if (debt > 0 && mEBITDA > 0) {
-      const dscr = mEBITDA / debt;
-      if (dscr < 1.25) ins.push({i:'💳', t:`Your debt coverage ratio (DSCR) is <strong>${dscr.toFixed(2)}×</strong> — below the 1.25× minimum most banks require. Avoid new loans until EBITDA improves.`});
+      const dscr = mEBITDA/debt;
+      if (dscr < 1.25) ins.push({i:'💳', t:`Debt coverage ratio (DSCR) is <strong>${dscr.toFixed(2)}×</strong> — below the 1.25× minimum banks require. Avoid new loans until EBITDA improves.`});
+    }
+    if (totalAct >= 3) {
+      const avgQ = annRev / (totalAct / 3);
+      const bestQ = Math.max(...qRevs);
+      const worstQ = Math.min(...qRevs);
+      if (bestQ > worstQ * 1.3) ins.push({i:'📅', t:`Revenue shows seasonal variation — your best quarter is <strong>${fmt(bestQ)}</strong> vs <strong>${fmt(worstQ)}</strong> for the slowest. Plan marketing spend heavier in the lower months.`});
     }
   }
   document.getElementById('insights').innerHTML = ins.length
